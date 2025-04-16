@@ -3,29 +3,44 @@ import { useState } from 'react';
 import { searchStations } from '@/services/api';
 
 
-
 export default function StationSearch() {
     const [query, setQuery] = useState('');
     const [stations, setStations] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
 
-    const handleSearch = (text: string) => {
+    const handleSearch = async (text: string) => {
         setQuery(text);
-        
+      
         if (text.length >= 1) {
-            const mockResults = [
-                "Amsterdam Centraal",
-                "Amsterdam Zuid",
-                "Amsterdam Sloterdijk",
-                "Amsterdam RAI"
-            ].filter(station => 
-                station.toLowerCase().includes(text.toLowerCase())
-            );
-            setStations(mockResults);
-        } else {
+          setLoading(true);
+          try {
+            const results: string[] = await searchStations(text); // results is a list of station names
+            setStations(results);
+          } catch (error) {
+            console.error('Search failed', error);
             setStations([]);
+          } finally {
+            setLoading(false);
+          }
+        } else {
+          setStations([]);
         }
-    };
+      };
+      
+
+        // if (text.length >= 1) {
+        //     const mockResults = [
+        //         "Amsterdam Centraal",
+        //         "Amsterdam Zuid",
+        //         "Amsterdam Sloterdijk",
+        //         "Amsterdam RAI"
+        //     ].filter(station => 
+        //         station.toLowerCase().includes(text.toLowerCase())
+        //     );
+        //     setStations(mockResults);
+        // } else {
+        //     setStations([]);
+        // }
 
 
     return (
