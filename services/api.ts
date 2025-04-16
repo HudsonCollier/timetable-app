@@ -1,6 +1,6 @@
 type StationResponse = string[];
 
-const API_BASE_URL = 'http://10.0.0.225:8080';
+const API_BASE_URL = 'https://c5bb-2601-681-4c00-9850-510d-efde-ee3a-22a1.ngrok-free.app';
 
   export const searchStations = async (query: string): Promise<string[]> => {
     const response = await fetch(
