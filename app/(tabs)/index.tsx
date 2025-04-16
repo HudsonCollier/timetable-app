@@ -2,18 +2,20 @@ import { Text, View, StyleSheet } from 'react-native';
 
 import Button from '@/components/Button';
 import ImageViewer from '@/components/imageViewer';
+import StationSearch from '@/components/stationSearch';
+
 const placeholder = require('@/assets/images/background.png')
 
 export default function Index() {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Welcome to Euro Timetables</Text>
-      <View style={styles.imageContainer}>
-        <ImageViewer imgSource = {placeholder}/>
-      </View>
       <View style={styles.footerContainer}>
-        <Button label="Find your station" />
       </View>
+      <View style={{ flex: 1 }}>
+        <StationSearch />
+      </View>
+
     </View>
   );
 }
@@ -25,7 +27,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   text: {
-    color: '#fff',
+    color: 'white',
+    fontSize: 24,
+    fontWeight: "600",
   },
   imageContainer: {
     flex: 1,
