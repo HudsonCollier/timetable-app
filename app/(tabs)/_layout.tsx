@@ -9,21 +9,44 @@ export default function TabLayout() {
         tabBarActiveTintColor: "#ffd33d",
         headerStyle: {
           backgroundColor: "#25292e",
+          height: 110,
         },
         headerShadowVisible: false,
         headerTintColor: "#fff",
+
+        headerTitleStyle: {
+          fontWeight: "bold",
+          color: "#fff",
+          fontSize: 40,
+        },
+
         tabBarStyle: {
           backgroundColor: "#25292e",
         },
+        headerTitleAlign: "left",
+
       }}
     >
       <Tabs.Screen
-        name="index"
+        name="home"
         options={{
-          title: "Home",
+          title: "My Trips",
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
-              name={focused ? "home-sharp" : "home-outline"}
+              name={focused ? "home" : "home-outline"}
+              color={color}
+              size={24}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: "Timetables",
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              name={focused ? "train" : "train-outline"}
               color={color}
               size={24}
             />
@@ -45,6 +68,7 @@ export default function TabLayout() {
           ),
         }}
       />
+      
     </Tabs>
   );
 }

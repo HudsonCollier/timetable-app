@@ -1,65 +1,96 @@
 import { StyleSheet, View, Pressable, Text, TextInput } from "react-native";
 import { useState } from 'react';
 import { searchStations } from '@/services/api';
+import { TouchableOpacity } from 'react-native';
 
 
 export default function StationSearch() {
+    const [loading, setLoading] = useState(false);
+    const [focused, setFocused] = useState(false) ;
     const [query, setQuery] = useState('');
     const [stations, setStations] = useState<string[]>([]);
-    const [loading, setLoading] = useState(false);
+    
 
     const handleSearch = async (text: string) => {
-        setQuery(text);
-      
-        if (text.length >= 1) {
-          setLoading(true);
-          try {
-            const results: string[] = await searchStations(text); // results is a list of station names
-            setStations(results);
-          } catch (error) {
-            console.error('Search failed', error);
-            setStations([]);
-          } finally {
-            setLoading(false);
-          }
-        } else {
-          setStations([]);
-        }
+                setQuery(text);
+
+    if (text.length >= 1) {
+         const mockResults = [
+             "Amsterdam Centraal",
+             "Amsterdam Zuid",
+             "Amsterdam Sloterdijk",
+             "Amsterdam RAI"
+         ].filter(station => 
+             station.toLowerCase().includes(text.toLowerCase())
+         );
+         setStations(mockResults);
+     } else {
+         setStations([]);
+     }
+
+        // if (text.length >= 1) {
+        //   setLoading(true);
+        //   try {
+        //     const results: string[] = await searchStations(text); // results is a list of station names
+        //     setStations(results);
+        //   } catch (error) {
+        //     console.error('Search failed', error);
+        //     setStations([]);
+        //   } finally {
+        //     setLoading(false);
+        //   }
+        // } else {
+        //   setStations([]);
+        // }
       };
       
 
-        // if (text.length >= 1) {
-        //     const mockResults = [
-        //         "Amsterdam Centraal",
-        //         "Amsterdam Zuid",
-        //         "Amsterdam Sloterdijk",
-        //         "Amsterdam RAI"
-        //     ].filter(station => 
-        //         station.toLowerCase().includes(text.toLowerCase())
-        //     );
-        //     setStations(mockResults);
-        // } else {
-        //     setStations([]);
-        // }
+    // if (text.length >= 1) {
+    //      const mockResults = [
+    //          "Amsterdam Centraal",
+    //          "Amsterdam Zuid",
+    //          "Amsterdam Sloterdijk",
+    //          "Amsterdam RAI"
+    //      ].filter(station => 
+    //          station.toLowerCase().includes(text.toLowerCase())
+    //      );
+    //      setStations(mockResults);
+    //  } else {
+    //      setStations([]);
+    //  }
 
 
-    return (
-        <View style={styles.container}>
-            <TextInput
+        return (
+            <View style={styles.container}>
+              <TextInput
                 style={styles.searchInput}
                 value={query}
                 onChangeText={handleSearch}
                 placeholder="Search for station..."
-            />
+                onFocus={() => setFocused(true)}
+                onBlur={() => setFocused(false)}
+              />
+          
+          {focused && Array.isArray(stations) && stations.length > 0 && (
             <View style={styles.resultsContainer}>
                 {stations.map((station, index) => (
-                    <Text key={index} style={styles.resultItem}>
-                        {station}
-                    </Text>
-                ))}
+                    <TouchableOpacity
+                        key={index}
+                        style={styles.resultItem}
+                        onPress={() => {
+                            setQuery(station);
+                            setStations([]);
+                            // setFocused(false);
+        }}
+      >
+        <Text>{station}</Text>
+      </TouchableOpacity>
+    ))}
+  </View>
+)}
             </View>
-        </View>
-    );
+          );
+          
 }
 
 const styles = StyleSheet.create({
@@ -90,4 +121,9 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: '#eee',
     }
+
+    
+
 });
+
+

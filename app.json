@@ -11,6 +11,7 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.hayes.EuroTimetables",
       "adaptiveIcon": {
         "backgroundColor": "#ffffff"
       }
@@ -21,17 +22,26 @@
     },
     "plugins": [
       "expo-router",
-      [
-        "expo-splash-screen",
-        {
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
-        }
-      ]
+      // App won't build without splashscreen image in assets
+      // [
+      //   "expo-splash-screen",
+      //   {
+      //     "imageWidth": 200,
+      //     "resizeMode": "contain",
+      //     "backgroundColor": "#ffffff"
+      //   }
+      // ]
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "cbb92f8b-4636-4f96-aa60-eabe152a64ee"
+      }
     }
   }
 }
