@@ -45,19 +45,7 @@ export default function StationSearch() {
       };
       
 
-    // if (text.length >= 1) {
-    //      const mockResults = [
-    //          "Amsterdam Centraal",
-    //          "Amsterdam Zuid",
-    //          "Amsterdam Sloterdijk",
-    //          "Amsterdam RAI"
-    //      ].filter(station => 
-    //          station.toLowerCase().includes(text.toLowerCase())
-    //      );
-    //      setStations(mockResults);
-    //  } else {
-    //      setStations([]);
-    //  }
+
 
 
         return (
