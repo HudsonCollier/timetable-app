@@ -4,11 +4,10 @@ import Button from '@/components/Button';
 import ImageViewer from '@/components/imageViewer';
 import StationSearch from '@/components/stationSearch';
 
-const placeholder = require('@/assets/images/background.png')
-
 export default function Index() {
   return (
     <View style={styles.container}>
+      <Text style={styles.text}>Welcome to Euro Timetables</Text>
       <View style={styles.footerContainer}>
       </View>
       <View style={{ flex: 1 }}>
