@@ -1,5 +1,4 @@
 import { Tabs } from "expo-router";
-
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 export default function TabLayout() {
@@ -8,7 +7,7 @@ export default function TabLayout() {
       screenOptions={{
         tabBarActiveTintColor: "#ffd33d",
         headerStyle: {
-          backgroundColor: "#25292e",
+          backgroundColor: "#0f2027",
           height: 110,
         },
         headerShadowVisible: false,
@@ -21,22 +20,20 @@ export default function TabLayout() {
         },
 
         tabBarStyle: {
-          backgroundColor: "#25292e",
+          backgroundColor: "rgba(44, 83, 100, 0.95)", // Fades from #2c5364 (lighter blue)
+          borderTopWidth: 0,
+          elevation: 0,
         },
-        headerTitleAlign: "left",
+        headerTitleAlign: "center",
 
       }}
     >
       <Tabs.Screen
         name="home"
         options={{
-          title: "My Trips",
+          title: "My Routes",
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? "home" : "home-outline"}
-              color={color}
-              size={24}
-            />
+            <Ionicons name="home" color={color} size={24} />
           ),
         }}
       />

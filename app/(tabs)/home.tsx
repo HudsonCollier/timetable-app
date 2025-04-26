@@ -1,19 +1,23 @@
-import { View, StyleSheet } from 'react-native';
-import TrainLookup from '@/components/TripSearch'; 
+import { LinearGradient } from 'expo-linear-gradient';
+import TrainLookup from '@/components/TripSearch';
+import { View, StyleSheet} from 'react-native';
 
 export default function Home() {
   return (
-    <View style={styles.container}>
+    <LinearGradient
+      colors={['#0f2027', '#203a43', '#2c5364']}
+      style={styles.container}
+    >
       <TrainLookup />
-    </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#25292e',
+    padding: 20,
+    justifyContent: 'center',
     alignItems: 'center',
-    justifyContent: 'center', 
   },
 });
