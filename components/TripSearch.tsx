@@ -1,73 +1,59 @@
-import React, { useState, useCallback } from "react";
+import React, { useState } from "react";
 import { searchStations } from "@/services/api";
-import { ScrollView } from "react-native";
+import { ScrollView, View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator } from "react-native";
 import useFetch from "@/services/useFetch";
-
-
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  ActivityIndicator,
-} from "react-native";
 
 export default function TrainLookup() {
   const [trainNumber, setTrainNumber] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
   const [departure, setDeparture] = useState("");
   const [arrival, setArrival] = useState("");
-  const [stationSuggestions, setStationSuggestions] = useState<string[]>([]);
   const [focusedField, setFocusedField] = useState<"departure" | "arrival" | null>(null);
 
-  const handleStationSearch = async (
-    text: string,
-    field: "departure" | "arrival"
-  ) => {
+  const { data: stationSuggestions = [], loading, error, refetch } = useFetch<string[]>(async () => [], false);
+
+  const handleStationSearch = async (text: string, field: "departure" | "arrival") => {
     if (field === "departure") setDeparture(text);
     else setArrival(text);
 
     if (text.length >= 2) {
-      const results = await searchStations(text);
-      setStationSuggestions(results);
+      await refetch(() => searchStations(text));
       setFocusedField(field);
-    } else {
-      setStationSuggestions([]);
     }
   };
 
   return (
     <View style={styles.container}>
-      <TextInput
-        style={[styles.input, styles.fullWidthInput]}
-        placeholder="Departure station"
-        value={departure}
-        onChangeText={(text) => handleStationSearch(text, "departure")}
-        onFocus={() => setFocusedField("departure")}
-        onBlur={() => setTimeout(() => setFocusedField(null), 150)}
-        placeholderTextColor="#888"
-      />
+     <View style={{ width: "100%", position: "relative" }}>
+  <TextInput
+    style={[styles.input, styles.fullWidthInput]}
+    placeholder="Departure station"
+    value={departure}
+    onChangeText={(text) => handleStationSearch(text, "departure")}
+    onFocus={() => setFocusedField("departure")}
+    onBlur={() => setTimeout(() => setFocusedField(null), 150)}
+    placeholderTextColor="#888"
+  />
 
-      {focusedField === "departure" && stationSuggestions.length > 0 && (
-        <View style={styles.suggestionBox}>
-          <ScrollView>
-            {stationSuggestions.map((station, index) => (
-              <TouchableOpacity
-                key={index}
-                onPress={() => {
-                  setDeparture(station);
-                  setStationSuggestions([]);
-                  setFocusedField(null);
-                }}
-              >
-                <Text style={styles.suggestionItem}>{station}</Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
-      )}
+  {focusedField === "departure" && stationSuggestions != null && stationSuggestions.length > 0 && (
+    <View style={styles.suggestionBox}>
+      <ScrollView keyboardShouldPersistTaps="handled">
+        {stationSuggestions.map((station, index) => (
+          <TouchableOpacity
+            key={index}
+            onPress={() => {
+              setDeparture(station);
+              setFocusedField(null);
+            }}
+            activeOpacity={0.6}
+          >
+            <Text style={styles.suggestionItem}>{station}</Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+    </View>
+  )}
+</View>
+
 
       <View style={styles.row}>
         <TextInput
@@ -79,20 +65,21 @@ export default function TrainLookup() {
           onBlur={() => setTimeout(() => setFocusedField(null), 150)}
           placeholderTextColor="#888"
         />
-        {focusedField === "arrival" && stationSuggestions.length > 0 && (
+        {focusedField === "arrival" && stationSuggestions != null && stationSuggestions.length > 0 && (
           <View style={styles.suggestionBox}>
-            {stationSuggestions.map((station, index) => (
-              <TouchableOpacity
-                key={index}
-                onPress={() => {
-                  setArrival(station);
-                  setStationSuggestions([]);
-                  setFocusedField(null);
-                }}
-              >
-                <Text style={styles.suggestionItem}>{station}</Text>
-              </TouchableOpacity>
-            ))}
+            <ScrollView>
+              {stationSuggestions.map((station, index) => (
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => {
+                    setArrival(station);
+                    setFocusedField(null);
+                  }}
+                >
+                  <Text style={styles.suggestionItem}>{station}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
           </View>
         )}
 
@@ -105,33 +92,17 @@ export default function TrainLookup() {
           placeholderTextColor="#888"
         />
       </View>
+
       <TouchableOpacity style={styles.button} onPress={() => {}}>
         <Text style={styles.buttonText}>Search</Text>
       </TouchableOpacity>
 
-      {/* {loading && <ActivityIndicator style={{ marginTop: 20 }} />}
-      {error !== "" && <Text style={styles.error}>{error}</Text>}
-      {trainInfo && (
-        <View style={styles.resultBox}>
-          <Text style={styles.resultText}>Train #{trainInfo.number}</Text>
-          <Text style={styles.resultText}>From: {trainInfo.origin}</Text>
-          <Text style={styles.resultText}>To: {trainInfo.destination}</Text>
-          <Text style={styles.resultText}>
-            Departs: {trainInfo.departureTime}
-          </Text>
-          <Text style={styles.resultText}>
-            Arrives: {trainInfo.arrivalTime}
-          </Text>
-          <Text style={styles.resultText}>Status: {trainInfo.status}</Text>
-          <Text style={styles.resultText}>
-            Platform: {trainInfo.platformNumber}
-          </Text>
-          <Text style={styles.resultText}>Date: {trainInfo.travelDate}</Text>
-        </View>
-      )} */}
+      {loading && <ActivityIndicator style={{ marginTop: 20 }} />}
+      {error && <Text style={styles.error}>Error fetching stations</Text>}
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
@@ -190,25 +161,26 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   suggestionBox: {
-    position: "absolute",
-    backgroundColor: "#fff",
-    zIndex: 10,
-    top: 40,
+    position: "absolute",  
+    top: 45,             
     left: 0,
     right: 0,
-    marginHorizontal: 10,
-    borderRadius: 5,
+    backgroundColor: "#fff",
+    borderRadius: 10,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 5,
-    maxHeight: 200, // Cap visible suggestions, enable scroll for more
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 6,
+    zIndex: 1000,
+    maxHeight: 200,
   },
-
+  
   suggestionItem: {
-    padding: 10,
+    padding: 15,
     borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
+    borderBottomColor: "#eee",
+    fontSize: 16,
+    color: "#333",
   },
 });
