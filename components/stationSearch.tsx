@@ -15,8 +15,10 @@ export default function StationSearch() {
     if (text.length >= 1) {
       setLoading(true);
       try {
-        const results: string[] = await searchStations(text); // 👈 your API call
-        setStations(results);
+        const results = await searchStations(text);   
+        const stationNames = results.map(station => station.name);
+        setStations(stationNames);
+
       } catch (error) {
         console.error("Search failed", error);
         setStations([]);

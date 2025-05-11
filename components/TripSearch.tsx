@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { searchStations } from "@/services/api";
+import { searchStations, addTrip } from "@/services/api";
 import {
   ScrollView,
   View,
@@ -8,50 +8,34 @@ import {
   TextInput,
   TouchableOpacity,
 } from "react-native";
-import useFetch from "@/services/useFetch";
+
+type TrainInfo = {
+    trainNumber: number;
+    departureStation: string;
+    arrivalStation: string;
+    direction: string;
+    departureTime: string;
+    arrivalTime: string;
+    onTime: boolean;
+    delayed: boolean;
+    cancelled: boolean;
+    delayDuration: number;
+    departurePlatformNumber?: string;
+    arrivalPlatformNumber?: string;
+    timeUntilDeparture: string;
+};
 
 export default function TrainLookup() {
   const [trainNumber, setTrainNumber] = useState("");
   const [departure, setDeparture] = useState("");
   const [arrival, setArrival] = useState("");
-  const [focusedField, setFocusedField] = useState<
-    "departure" | "arrival" | null
-  >(null);
-  const {
-    data: stationSuggestions = [],
-    error,
-    refetch,
-  } = useFetch<{ name: string; code: string }[]>(async () => [], false);
+  const [focusedField, setFocusedField] = useState<"departure" | "arrival" | null>(null);
+  const [departureCode, setDepartureCode] = useState("");
+  const [arrivalCode, setArrivalCode] = useState("");
+  const [stationMap, setStationMap] = useState<Record<string, string>>({});
 
-  const [selectedDepartureCode, setSelectedDepartureCode] = useState<
-    string | null
-  >(null);
-  const [selectedArrivalCode, setSelectedArrivalCode] = useState<string | null>(
-    null
-  );
-
-  // Setting up a mock trip
-  const mockTrip = {
-    trainNumber: "8704",
-    departureStation: "Amsterdam",
-    arrivalStation: "Hamburg",
-    direction: "Berlin",
-    departureTime: "10:15",
-    arrivalTime: "14:42",
-    onTime: true,
-    delayed: false,
-    cancelled: false,
-    delayDuration: "0",
-    timeUntilDeparture: "12m 30s",
-    departurePlatformNum: "14",
-    arrivalPlatformNum: "16",
-    stops: [
-      { stationName: "Utrecht Centraal", time: "11:05" },
-      { stationName: "Arnhem", time: "12:00" },
-    ],
-  };
-
-  const [tripData, setTripData] = useState(mockTrip);
+  const [stationNames, setStationNames] = useState<string[]>([]);
+  const [tripData, setTripData] = useState<TrainInfo | null>(null);
 
   const handleStationSearch = async (
     text: string,
@@ -61,13 +45,57 @@ export default function TrainLookup() {
     else setArrival(text);
 
     if (text.length >= 2) {
-      await refetch(() => searchStations(text));
-      setFocusedField(field);
+      try {
+        const results = await searchStations(text);
+        const names = results.map((station) => station.name);
+        const map = Object.fromEntries(results.map((station) => [station.name, station.code]));
+        // const names = ["Amsterdam", "Rotterdam", "Utrecht"];
+        setStationNames(names);
+        setStationMap(map); 
+        setFocusedField(field);
+      } catch (error) {
+        console.error("Failed to fetch stations:", error);
+        setStationNames([]);
+      }
+    } else {
+      setStationNames([]);
+    }
+
+  };
+
+  const handleAddTrip = async () => {
+    if (trainNumber.trim() !== "" && departure && arrival) {
+      try {
+        const trainNumAsNumber = Number(trainNumber);
+        const trip = await addTrip(departureCode, arrivalCode, trainNumAsNumber);
+        // setTripData({
+        //     trainNumber: 5482,
+        //     departureStation: "Amsterdam Centraal",
+        //     arrivalStation: "Rotterdam Centraal",
+        //     direction: "Southbound",
+        //     departureTime: "16:30",
+        //     arrivalTime: "17:10",
+        //     onTime: true,
+        //     delayed: false,
+        //     cancelled: false,
+        //     delayDuration: 0,
+        //     departurePlatformNumber: "7a", // ✅ Correct name
+        //     arrivalPlatformNumber: "12b",  // ✅ Correct name
+        //     timeUntilDeparture: "15 min",
+        //   });      
+
+        setTripData(trip as TrainInfo);
+        } catch (error) {
+        console.error("ERROR", error);
+      }
+    } else {
+      console.warn("Missing some fields");
     }
   };
 
   return (
     <View style={styles.container}>
+      {/* Departure */}
       <View style={{ width: "100%", position: "relative" }}>
         <TextInput
           style={[styles.input, styles.fullWidthInput]}
@@ -78,30 +106,28 @@ export default function TrainLookup() {
           onBlur={() => setTimeout(() => setFocusedField(null), 150)}
           placeholderTextColor="#888"
         />
-
-        {focusedField === "departure" &&
-          stationSuggestions != null &&
-          stationSuggestions.length > 0 && (
-            <View style={styles.suggestionBox}>
-              <ScrollView keyboardShouldPersistTaps="handled">
-                {stationSuggestions.map((station, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    onPress={() => {
-                      setDeparture(station.name);
-                      setSelectedDepartureCode(station.code);
-                      setFocusedField(null);
-                    }}
-                    activeOpacity={0.6}
-                  >
-                    <Text style={styles.suggestionItem}>{station.name}</Text>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
-            </View>
-          )}
+        {focusedField === "departure" && stationNames.length > 0 && (
+          <View style={styles.suggestionBox}>
+            <ScrollView keyboardShouldPersistTaps="handled">
+              {stationNames.map((name, index) => (
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => {
+                    setDeparture(name);
+                    setDepartureCode(stationMap[name] || "");
+                    setFocusedField(null);
+                  }}
+                  activeOpacity={0.6}
+                >
+                  <Text style={styles.suggestionItem}>{name}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        )}
       </View>
 
+      {/* Arrival + Train Number */}
       <View style={styles.row}>
         <TextInput
           style={[styles.input, styles.halfInput, { marginRight: 8 }]}
@@ -112,26 +138,24 @@ export default function TrainLookup() {
           onBlur={() => setTimeout(() => setFocusedField(null), 150)}
           placeholderTextColor="#888"
         />
-        {focusedField === "arrival" &&
-          stationSuggestions != null &&
-          stationSuggestions.length > 0 && (
-            <View style={styles.suggestionBox}>
-              <ScrollView>
-                {stationSuggestions.map((station, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    onPress={() => {
-                      setArrival(station.name);
-                      setSelectedArrivalCode(station.code);
-                      setFocusedField(null);
-                    }}
-                  >
-                    <Text style={styles.suggestionItem}>{station.name}</Text>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
-            </View>
-          )}
+        {focusedField === "arrival" && stationNames.length > 0 && (
+          <View style={styles.suggestionBox}>
+            <ScrollView>
+              {stationNames.map((name, index) => (
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => {
+                    setArrival(name);
+                    setArrivalCode(stationMap[name] || "");
+                    setFocusedField(null);
+                  }}
+                >
+                  <Text style={styles.suggestionItem}>{name}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        )}
 
         <TextInput
           style={[styles.input, styles.halfInput]}
@@ -143,15 +167,14 @@ export default function TrainLookup() {
         />
       </View>
 
-      <TouchableOpacity style={styles.button} onPress={() => {}}>
-        <Text style={styles.buttonText}>Search</Text>
+      <TouchableOpacity style={styles.button} onPress={handleAddTrip}>
+        <Text style={styles.buttonText}>Add Trip</Text>
       </TouchableOpacity>
 
       {tripData && (
         <View style={styles.tripCard}>
           <Text style={styles.trainHeader}>
-            🚆 Train{" "}
-            <Text style={styles.trainNumber}>{tripData.trainNumber}</Text>
+            🚆 Train <Text style={styles.trainNumber}>{tripData.trainNumber}</Text>
           </Text>
           <Text style={styles.routeText}>
             {tripData.departureStation} → {tripData.arrivalStation}
@@ -159,7 +182,6 @@ export default function TrainLookup() {
           <Text style={styles.departureCountdown}>
             Departs in {tripData.timeUntilDeparture}
           </Text>
-
           <View style={styles.timeRow}>
             <Text style={styles.timeText}>
               🏁 {tripData.departureTime} {tripData.departureStation}
@@ -168,13 +190,6 @@ export default function TrainLookup() {
               🏁 {tripData.arrivalTime} {tripData.arrivalStation}
             </Text>
           </View>
-
-          <Text style={styles.intermediateTitle}>Intermediate stops:</Text>
-          {tripData.stops.map((stop, idx) => (
-            <Text key={idx} style={styles.stopText}>
-              ├ {stop.stationName} {stop.time}
-            </Text>
-          ))}
         </View>
       )}
     </View>
@@ -186,13 +201,6 @@ const styles = StyleSheet.create({
     padding: 40,
     alignItems: "center",
     height: "100%",
-    width: "100%",
-  },
-  resultBox: {
-    marginTop: 20,
-    padding: 15,
-    backgroundColor: "#414952",
-    borderRadius: 8,
     width: "100%",
   },
   input: {
@@ -209,19 +217,11 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,
+    marginTop: 10,
   },
   buttonText: {
     color: "white",
     fontWeight: "bold",
-  },
-  error: {
-    color: "red",
-    marginTop: 10,
-  },
-  resultText: {
-    fontSize: 16,
-    marginBottom: 5,
-    color: "white",
   },
   row: {
     flexDirection: "row",
@@ -251,7 +251,6 @@ const styles = StyleSheet.create({
     zIndex: 1000,
     maxHeight: 200,
   },
-
   suggestionItem: {
     padding: 15,
     borderBottomWidth: 1,
@@ -266,50 +265,31 @@ const styles = StyleSheet.create({
     marginTop: 20,
     width: "100%",
   },
-
   trainHeader: {
     fontSize: 20,
     fontWeight: "bold",
     color: "#fff",
     marginBottom: 5,
   },
-
   trainNumber: {
     color: "#87CEEB",
   },
-
   routeText: {
     fontSize: 18,
     color: "#fff",
     marginBottom: 5,
   },
-
   departureCountdown: {
     fontSize: 16,
     color: "#87CEEB",
     marginBottom: 10,
   },
-
   timeRow: {
     marginBottom: 10,
   },
-
   timeText: {
     fontSize: 16,
     color: "#fff",
     marginBottom: 4,
-  },
-
-  intermediateTitle: {
-    fontSize: 16,
-    color: "#fff",
-    marginTop: 10,
-    marginBottom: 5,
-    fontWeight: "bold",
-  },
-
-  stopText: {
-    fontSize: 14,
-    color: "#fff",
   },
 });

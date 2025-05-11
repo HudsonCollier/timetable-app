@@ -20,7 +20,7 @@ export default function TabLayout() {
         },
 
         tabBarStyle: {
-          backgroundColor: "rgba(44, 83, 100, 0.95)", // Fades from #2c5364 (lighter blue)
+          backgroundColor: "rgba(44, 83, 100, 0.95)",
           borderTopWidth: 0,
           elevation: 0,
         },
@@ -31,7 +31,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="home"
         options={{
-          title: "My Routes",
+          title: "My Trips ",
+          tabBarLabel: "Home",
           tabBarIcon: ({ color, focused }) => (
             <Ionicons name="home" color={color} size={24} />
           ),

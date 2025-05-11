@@ -2,12 +2,10 @@ import { useState, useEffect } from 'react';
 
 const useFetch = <T>(fetchFunction: () => Promise<T>, autoFetch = true) => {
     const [data, setData] = useState<T | null>(null);
-    const [loading, setLoading] = useState(false);
     const [error, setError] = useState<Error | null>(null);
   
     const fetchData = async (customFetchFunction?: () => Promise<T>) => {
       try {
-        setLoading(true);
         setError(null);
   
         const result = await (customFetchFunction ? customFetchFunction() : fetchFunction());
@@ -15,13 +13,11 @@ const useFetch = <T>(fetchFunction: () => Promise<T>, autoFetch = true) => {
       } catch (err) {
         setError(err instanceof Error ? err : new Error("error"));
       } finally {
-        setLoading(false);
       }
     };
   
     const reset = () => {
       setData(null);
-      setLoading(false);
       setError(null);
     };
   
@@ -31,7 +27,7 @@ const useFetch = <T>(fetchFunction: () => Promise<T>, autoFetch = true) => {
       }
     }, []);
   
-    return { data, loading, error, refetch: fetchData, reset };
+    return { data, error, refetch: fetchData, reset };
   };
   
   export default useFetch;
