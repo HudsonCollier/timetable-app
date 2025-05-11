@@ -43,7 +43,6 @@ export interface TrainInfo {
   
     if (!response.ok) throw new Error('Network error');
     const json = await response.json();
-    console.log("Trip from API:", json); // 👈 Debug log
     return json as TrainInfo;
 
   };

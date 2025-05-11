@@ -49,7 +49,6 @@ export default function TrainLookup() {
         const results = await searchStations(text);
         const names = results.map((station) => station.name);
         const map = Object.fromEntries(results.map((station) => [station.name, station.code]));
-        // const names = ["Amsterdam", "Rotterdam", "Utrecht"];
         setStationNames(names);
         setStationMap(map); 
         setFocusedField(field);
@@ -68,22 +67,6 @@ export default function TrainLookup() {
       try {
         const trainNumAsNumber = Number(trainNumber);
         const trip = await addTrip(departureCode, arrivalCode, trainNumAsNumber);
-        // setTripData({
-        //     trainNumber: 5482,
-        //     departureStation: "Amsterdam Centraal",
-        //     arrivalStation: "Rotterdam Centraal",
-        //     direction: "Southbound",
-        //     departureTime: "16:30",
-        //     arrivalTime: "17:10",
-        //     onTime: true,
-        //     delayed: false,
-        //     cancelled: false,
-        //     delayDuration: 0,
-        //     departurePlatformNumber: "7a", // ✅ Correct name
-        //     arrivalPlatformNumber: "12b",  // ✅ Correct name
-        //     timeUntilDeparture: "15 min",
-        //   });      
-
         setTripData(trip as TrainInfo);
         } catch (error) {
         console.error("ERROR", error);
@@ -95,7 +78,6 @@ export default function TrainLookup() {
 
   return (
     <View style={styles.container}>
-      {/* Departure */}
       <View style={{ width: "100%", position: "relative" }}>
         <TextInput
           style={[styles.input, styles.fullWidthInput]}
@@ -127,7 +109,6 @@ export default function TrainLookup() {
         )}
       </View>
 
-      {/* Arrival + Train Number */}
       <View style={styles.row}>
         <TextInput
           style={[styles.input, styles.halfInput, { marginRight: 8 }]}
@@ -172,29 +153,42 @@ export default function TrainLookup() {
       </TouchableOpacity>
 
       {tripData && (
-        <View style={styles.tripCard}>
-          <Text style={styles.trainHeader}>
-            🚆 Train <Text style={styles.trainNumber}>{tripData.trainNumber}</Text>
-          </Text>
-          <Text style={styles.routeText}>
-            {tripData.departureStation} → {tripData.arrivalStation}
-          </Text>
-          <Text style={styles.departureCountdown}>
-            Departs in {tripData.timeUntilDeparture}
-          </Text>
-          <View style={styles.timeRow}>
-            <Text style={styles.timeText}>
-              🏁 {tripData.departureTime} {tripData.departureStation}
-            </Text>
-            <Text style={styles.timeText}>
-              🏁 {tripData.arrivalTime} {tripData.arrivalStation}
-            </Text>
-          </View>
-        </View>
-      )}
+  <View style={styles.tripCard}>
+    <Text style={styles.trainHeader}>
+      🚆 Train <Text style={styles.trainNumber}>{tripData.trainNumber}</Text>
+    </Text>
+    <Text style={styles.routeText}>
+      {tripData.departureStation} → {tripData.arrivalStation}
+    </Text>
+    <Text style={styles.departureCountdown}>
+      Departs in {tripData.timeUntilDeparture}
+    </Text>
+    <View style={styles.timeRow}>
+      <Text style={styles.timeText}>
+        🏁 {tripData.departureTime} ({tripData.departureStation}) on platform {tripData.departurePlatformNumber ?? "N/A"}
+      </Text>
+      <Text style={styles.timeText}>
+        🏁 {tripData.arrivalTime} ({tripData.arrivalStation}) on platform {tripData.arrivalPlatformNumber ?? "N/A"}
+      </Text>
+    </View>
+    <Text style={styles.timeText}>Direction: {tripData.direction}</Text>
+    <Text style={styles.timeText}>Delay: {tripData.delayDuration} seconds</Text>
+    <Text style={styles.timeText}>Status:</Text>
+    <Text style={styles.timeText}>🟢 On Time: {tripData.onTime ? "Yes" : "No"}</Text>
+    <Text style={styles.timeText}>🟡 Delayed: {tripData.delayed ? "Yes" : "No"}</Text>
+    <Text style={styles.timeText}>🔴 Cancelled: {tripData.cancelled ? "Yes" : "No"}</Text>
+  </View>
+)}
     </View>
   );
 }
+
+
+
+
+
+
+
 
 const styles = StyleSheet.create({
   container: {

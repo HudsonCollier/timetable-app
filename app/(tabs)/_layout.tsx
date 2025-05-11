@@ -25,23 +25,15 @@ export default function TabLayout() {
           elevation: 0,
         },
         headerTitleAlign: "center",
-
       }}
     >
+
+      
       <Tabs.Screen
-        name="home"
-        options={{
-          title: "My Trips ",
-          tabBarLabel: "Home",
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons name="home" color={color} size={24} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="index"
+        name="timetables"
         options={{
           title: "Timetables",
+          tabBarLabel: "Timetables",
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name={focused ? "train" : "train-outline"}
@@ -51,22 +43,17 @@ export default function TabLayout() {
           ),
         }}
       />
+
       <Tabs.Screen
-        name="about"
+        name="index"
         options={{
-          title: "About",
+          title: "My Trips ",
+          tabBarLabel: "Trips",
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={
-                focused ? "information-circle" : "information-circle-outline"
-              }
-              color={color}
-              size={24}
-            />
+            <Ionicons name="home" color={color} size={24} />
           ),
         }}
       />
-      
     </Tabs>
   );
 }
