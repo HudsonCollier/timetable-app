@@ -32,7 +32,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="timetables"
         options={{
-          title: "Timetables",
+          title: "Departures",
           tabBarLabel: "Timetables",
           tabBarIcon: ({ color, focused }) => (
             <Ionicons

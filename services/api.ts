@@ -1,6 +1,6 @@
 type StationResponse = string[];
 
-const API_BASE_URL = 'http://192.168.1.121:8080';
+const API_BASE_URL = 'http://192.168.1.85:8080';
 export const searchStations = async (query: string): Promise<{ name: string, code: string }[]> => {
     const response = await fetch(
         `${API_BASE_URL}/stations/search?query=${encodeURIComponent(query)}`,

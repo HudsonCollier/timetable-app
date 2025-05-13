@@ -49,7 +49,6 @@ export default function StationSearch() {
               onPress={() => {
                 setQuery(station);
                 setStations([]);
-                // setFocused(false);
               }}
             >
               <Text>{station}</Text>

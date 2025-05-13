@@ -1,27 +1,26 @@
 import { Text, View, StyleSheet } from 'react-native';
-
-import Button from '@/components/Button';
-import ImageViewer from '@/components/imageViewer';
+import { LinearGradient } from 'expo-linear-gradient';
 import StationSearch from '@/components/stationSearch';
 
 export default function Timetables() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Welcome to Euro Timetables</Text>
-      <View style={styles.footerContainer}>
-      </View>
+    <LinearGradient
+      colors={['#0f2027', '#203a43', '#2c5364']}
+      style={styles.container}
+    >
+      <View style={styles.footerContainer} />
       <View style={{ flex: 1 }}>
         <StationSearch />
       </View>
-
-    </View>
+    </LinearGradient>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#25292e',
+    padding: 20,
     alignItems: 'center',
   },
   text: {
@@ -29,11 +28,10 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "600",
   },
-  imageContainer: {
-    flex: 1,
-  },
   footerContainer: {
     flex: 1 / 3,
     alignItems: 'center',
   },
 });
+
+
