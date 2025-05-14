@@ -20,7 +20,7 @@ export default function TabLayout() {
         },
 
         tabBarStyle: {
-          backgroundColor: "rgba(44, 83, 100, 0.95)",
+          backgroundColor: "rgba(255, 255, 255, 0.95)",
           borderTopWidth: 0,
           elevation: 0,
         },
@@ -32,7 +32,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="timetables"
         options={{
-          title: "Departures",
+          headerShown: false,
           tabBarLabel: "Timetables",
           tabBarIcon: ({ color, focused }) => (
             <Ionicons

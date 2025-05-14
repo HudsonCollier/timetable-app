@@ -1,18 +1,24 @@
-import { Text, View, StyleSheet } from 'react-native';
+import { Text, View, StyleSheet, ImageBackground, SafeAreaView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import StationSearch from '@/components/stationSearch';
+import TimetableSearch from '@/components/TimetableSearch';
 
 export default function Timetables() {
   return (
-    <LinearGradient
-      colors={['#0f2027', '#203a43', '#2c5364']}
-      style={styles.container}
-    >
-      <View style={styles.footerContainer} />
-      <View style={{ flex: 1 }}>
-        <StationSearch />
+    <View style={styles.container}>
+      <ImageBackground
+        source={require('@/assets/images/dutchPic.jpg')}
+        style={styles.headerImage}
+        resizeMode="cover"
+      >
+        <Text style={styles.headerText}>Find a Timetable</Text>
+      </ImageBackground>
+
+      <View style={styles.content}>
+        <TimetableSearch onSubmit={(station, time) => {
+        }} />
       </View>
-    </LinearGradient>
+    </View>
   );
 }
 
@@ -20,18 +26,25 @@ export default function Timetables() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#f0f0f0',
+  },
+  headerImage: {
+    width: '110%',
+    height: 250,
+    justifyContent: 'flex-end',
     padding: 20,
-    alignItems: 'center',
   },
-  text: {
+  headerText: {
+    fontSize: 36,
+    fontWeight: 'bold',
     color: 'white',
-    fontSize: 24,
-    fontWeight: "600",
   },
-  footerContainer: {
-    flex: 1 / 3,
-    alignItems: 'center',
+  content: {
+    flex: 1,
+    paddingVertical: 0,
+    paddingHorizontal: 0,
   },
 });
+
 
 
