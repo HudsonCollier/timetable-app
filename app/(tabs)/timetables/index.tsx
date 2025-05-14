@@ -2,8 +2,12 @@ import { Text, View, StyleSheet, ImageBackground, SafeAreaView } from 'react-nat
 import { LinearGradient } from 'expo-linear-gradient';
 import StationSearch from '@/components/stationSearch';
 import TimetableSearch from '@/components/TimetableSearch';
+import { useRouter } from 'expo-router';
 
-export default function Timetables() {
+export default function TimetablesSearchScreen() {
+
+  const router = useRouter();
+
   return (
     <View style={styles.container}>
       <ImageBackground
@@ -16,6 +20,7 @@ export default function Timetables() {
 
       <View style={styles.content}>
         <TimetableSearch onSubmit={(station, time) => {
+          router.push("/(tabs)/timetables/results");
         }} />
       </View>
     </View>

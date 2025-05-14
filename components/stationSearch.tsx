@@ -89,14 +89,13 @@ const styles = StyleSheet.create({
     right: 0,
     backgroundColor: "#fff",
     borderRadius: 10,
-    zIndex: 999,         // important
-    elevation: 6,        // for Android
-    shadowColor: "#000", // for iOS
+    zIndex: 999, 
+    elevation: 6,
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 5,
   },
-  
   resultItem: {
     padding: 10,
     borderBottomWidth: 1,
