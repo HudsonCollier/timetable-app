@@ -2,15 +2,18 @@
 
 import { useState } from "react";
 import { Text, View, StyleSheet, TextInput, Button, TouchableOpacity } from "react-native";
-import StationSearch from "./stationSearch";
+import StationSearch from "./stationSearch"
 
-export default function TripSearch({ onSubmit }: { onSubmit: (station: string, time: string) => void }) {
+export default function TripSearch({ onSubmit }: { onSubmit: (station: string, code: string) => void }) {
   const [station, setStation] = useState("");
   const [time, setTime] = useState("");
+  const[code, setCode] = useState("");
 
   return (
     <View style={styles.container}>
-      <StationSearch placeholder="Search for station..." onSelect={setStation} />
+      <StationSearch onSelect={(selectedName, selectedCode) => {
+      setStation(selectedName);
+      setCode(selectedCode);}}/>
 
       <TextInput
         style={styles.timeInput}
@@ -20,7 +23,7 @@ export default function TripSearch({ onSubmit }: { onSubmit: (station: string, t
         onChangeText={setTime}
       />
 
-<TouchableOpacity style={styles.button} onPress={() => onSubmit(station, time)}>
+<TouchableOpacity style={styles.button} onPress={() => onSubmit(station, code)}>
   <Text style={styles.buttonText}>View Departures</Text>
 </TouchableOpacity>
     </View>

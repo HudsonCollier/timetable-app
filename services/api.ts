@@ -46,6 +46,26 @@ export interface TrainInfo {
     return json as TrainInfo;
 
   };
+
+
+  export interface timetableEntry {
+    departureTime: string,
+    direction: string,
+    trainNumber: string,
+    departurePlatform: string,
+    intermediateStations: string[]
+  }
+
+  export const searchDepartures = async (stationCode: string) : Promise<timetableEntry[]> => {
+    const response = await fetch(
+      `${API_BASE_URL}/timetable/departures?stationCode=${encodeURIComponent(stationCode)}`,
+      { method: 'GET', headers: { 'Content-Type': 'application/json' } }
+    );
+    
+    if (!response.ok) throw new Error("NETWORK ERROR");
+    const json = await response.json();
+    return json as timetableEntry[];
+  }
   
 
 

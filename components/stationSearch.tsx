@@ -1,6 +1,6 @@
 import { StyleSheet, View, Pressable, Text, TextInput } from "react-native";
 import { useState } from "react";
-import { searchStations } from "@/services/api";
+import { searchStations } from "../services/api";
 import { TouchableOpacity } from "react-native";
 
 export default function StationSearch({
@@ -8,11 +8,13 @@ export default function StationSearch({
   onSelect,
 }: {
   placeholder?: string;
-  onSelect: (station: string) => void;
+  onSelect: (station: string, stationCode: string) => void;
 }) {
   const [focused, setFocused] = useState(false);
   const [query, setQuery] = useState("");
   const [stations, setStations] = useState<string[]>([]);
+  const[stationCode, setCode] = useState("");
+  const [stationMap, setStationMap] = useState<Record<string, string>>({});
 
   const handleSearch = async (text: string) => {
     setQuery(text);
@@ -21,8 +23,9 @@ export default function StationSearch({
       try {
         const results = await searchStations(text);   
         const stationNames = results.map(station => station.name);
+        const map = Object.fromEntries(results.map((station) => [station.name, station.code]));
         setStations(stationNames);
-
+        setStationMap(map); 
       } catch (error) {
         console.error("Search failed", error);
         setStations([]);
@@ -39,6 +42,7 @@ export default function StationSearch({
         value={query}
         onChangeText={handleSearch}
         placeholder={placeholder}
+        placeholderTextColor = "#999"
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
       />
@@ -52,6 +56,9 @@ export default function StationSearch({
               onPress={() => {
                 setQuery(station);
                 setStations([]);
+                const code = stationMap[station] || "";
+                setCode(code);
+                onSelect(station, code);
               }}
             >
               <Text>{station}</Text>
