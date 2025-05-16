@@ -3,6 +3,7 @@ import { useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
 import { searchDepartures } from '@/services/api';
+import StationSearch from '@/components/stationSearch';
 
 type timetableEntry = {
   departureTime: string,
@@ -17,6 +18,7 @@ export default function ResultsScreen() {
   const[departures, setDepartures] = useState<timetableEntry[]>([]);
   const[loading, setLoading] = useState(false);
   const[error, setError] = useState("");
+  const [selectedStation, setSelectedStation] = useState(station as string);
 
   useEffect(() => {
     if(station) {
@@ -61,7 +63,6 @@ export default function ResultsScreen() {
             style={styles.input}
             placeholder="Search for station..."
             placeholderTextColor="#999"
-            editable={false}
             value={station as string}
           />
           <TextInput

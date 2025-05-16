@@ -9,6 +9,11 @@ import {
   TouchableOpacity,
 } from "react-native";
 
+
+type Props = {
+  onAddTrip: (trip: TrainInfo) => void;
+};
+
 type TrainInfo = {
     trainNumber: number;
     departureStation: string;
@@ -25,7 +30,7 @@ type TrainInfo = {
     timeUntilDeparture: string;
 };
 
-export default function TrainLookup() {
+export default function TrainLookup({onAddTrip} : Props) {
   const [trainNumber, setTrainNumber] = useState("");
   const [departure, setDeparture] = useState("");
   const [arrival, setArrival] = useState("");
@@ -33,7 +38,6 @@ export default function TrainLookup() {
   const [departureCode, setDepartureCode] = useState("");
   const [arrivalCode, setArrivalCode] = useState("");
   const [stationMap, setStationMap] = useState<Record<string, string>>({});
-
   const [stationNames, setStationNames] = useState<string[]>([]);
   const [tripData, setTripData] = useState<TrainInfo | null>(null);
 
@@ -59,7 +63,6 @@ export default function TrainLookup() {
     } else {
       setStationNames([]);
     }
-
   };
 
   const handleAddTrip = async () => {
@@ -68,6 +71,7 @@ export default function TrainLookup() {
         const trainNumAsNumber = Number(trainNumber);
         const trip = await addTrip(departureCode, arrivalCode, trainNumAsNumber);
         setTripData(trip as TrainInfo);
+        onAddTrip(trip as TrainInfo);
         } catch (error) {
         console.error("ERROR", error);
       }
@@ -151,34 +155,6 @@ export default function TrainLookup() {
       <TouchableOpacity style={styles.button} onPress={handleAddTrip}>
         <Text style={styles.buttonText}>Add Trip</Text>
       </TouchableOpacity>
-
-      {tripData && (
-  <View style={styles.tripCard}>
-    <Text style={styles.trainHeader}>
-      🚆 Train <Text style={styles.trainNumber}>{tripData.trainNumber}</Text>
-    </Text>
-    <Text style={styles.routeText}>
-      {tripData.departureStation} → {tripData.arrivalStation}
-    </Text>
-    <Text style={styles.departureCountdown}>
-      Departs in {tripData.timeUntilDeparture}
-    </Text>
-    <View style={styles.timeRow}>
-      <Text style={styles.timeText}>
-        🏁 {tripData.departureTime} ({tripData.departureStation}) on platform {tripData.departurePlatformNumber ?? "N/A"}
-      </Text>
-      <Text style={styles.timeText}>
-        🏁 {tripData.arrivalTime} ({tripData.arrivalStation}) on platform {tripData.arrivalPlatformNumber ?? "N/A"}
-      </Text>
-    </View>
-    <Text style={styles.timeText}>Direction: {tripData.direction}</Text>
-    <Text style={styles.timeText}>Delay: {tripData.delayDuration} seconds</Text>
-    <Text style={styles.timeText}>Status:</Text>
-    <Text style={styles.timeText}>🟢 On Time: {tripData.onTime ? "Yes" : "No"}</Text>
-    <Text style={styles.timeText}>🟡 Delayed: {tripData.delayed ? "Yes" : "No"}</Text>
-    <Text style={styles.timeText}>🔴 Cancelled: {tripData.cancelled ? "Yes" : "No"}</Text>
-  </View>
-)}
     </View>
   );
 }
@@ -192,11 +168,10 @@ export default function TrainLookup() {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 40,
-    alignItems: "center",
-    height: "100%",
+    paddingHorizontal: 0,
+    paddingTop: 0,
     width: "100%",
-  },
+  },  
   input: {
     height: 40,
     borderWidth: 1,
@@ -251,39 +226,5 @@ const styles = StyleSheet.create({
     borderBottomColor: "#eee",
     fontSize: 16,
     color: "#333",
-  },
-  tripCard: {
-    backgroundColor: "rgba(255,255,255,0.1)",
-    padding: 20,
-    borderRadius: 12,
-    marginTop: 20,
-    width: "100%",
-  },
-  trainHeader: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#fff",
-    marginBottom: 5,
-  },
-  trainNumber: {
-    color: "#87CEEB",
-  },
-  routeText: {
-    fontSize: 18,
-    color: "#fff",
-    marginBottom: 5,
-  },
-  departureCountdown: {
-    fontSize: 16,
-    color: "#87CEEB",
-    marginBottom: 10,
-  },
-  timeRow: {
-    marginBottom: 10,
-  },
-  timeText: {
-    fontSize: 16,
-    color: "#fff",
-    marginBottom: 4,
-  },
+  }
 });
