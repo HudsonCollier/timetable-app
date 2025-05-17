@@ -86,22 +86,31 @@ export default function ResultsScreen() {
           contentContainerStyle={{ paddingBottom: 30 }}
         >
           {departures.map((dep, index) => (
-            <TouchableOpacity
-              key={index}
-              style={styles.resultCard}
-              onPress={() => {
-                console.log("Selected", dep.trainNumber);
-              }}
-            >
-              <View style={styles.resultRow}>
-                <Text style={styles.departureTime}>{dep.departureTime}</Text>
-                <View style={styles.destinationBlock}>
-                  <Text style={styles.destination}>{dep.direction}</Text>
-                  <Text style={styles.platform}>Pl. {dep.departurePlatform}</Text>
-                </View>
-              </View>
-            </TouchableOpacity>
-          ))}
+  <View key={index} style={styles.resultCard}>
+    <View style={styles.resultRow}>
+      <View style={{ flex: 1 }}>
+        <Text style={styles.departureTime}>
+          {dep.departureTime} - Train #{dep.trainNumber}
+        </Text>
+
+        <Text style={styles.destination}>
+          Direction: {dep.direction}
+        </Text>
+
+        <Text style={styles.platform}>
+          Platform: {dep.departurePlatform}
+        </Text>
+
+        {dep.intermediateStations.length > 0 && (
+          <Text style={styles.stops}>
+            Stops: {dep.intermediateStations.join(', ')}
+          </Text>
+        )}
+      </View>
+    </View>
+  </View>
+))}
+
         </ScrollView>
       </SafeAreaView>
     </View>
@@ -196,6 +205,13 @@ const styles = StyleSheet.create({
       color: '#666',
       marginTop: 2,
     },
+    stops: {
+      marginTop: 4,
+      fontSize: 13,
+      color: '#555',
+      lineHeight: 18,
+    },
+    
   });
   
   
