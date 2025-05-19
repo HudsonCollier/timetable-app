@@ -30,7 +30,7 @@ export default function TabLayout() {
 
       
       <Tabs.Screen
-        name="timetables"
+        name="(timetables)"
         options={{
           headerShown: false,
           tabBarLabel: "Timetables",

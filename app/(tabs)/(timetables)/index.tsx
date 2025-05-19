@@ -22,7 +22,7 @@ export default function TimetablesSearchScreen() {
 
       <View style={styles.content}>
         <TimetableSearch onSubmit={(station, code) => {
-          router.push({ pathname: "/timetables/results", params: { station: station.toString(), code: code.toString() } });
+          router.push({ pathname: "/results", params: { station: station.toString(), code: code.toString() } });
         }} />
       </View>
     </View>

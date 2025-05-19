@@ -2,11 +2,14 @@ import { LinearGradient } from 'expo-linear-gradient';
 import TrainLookup from '@/components/TripSearch';
 import { View, StyleSheet, StatusBar, SafeAreaView, TextInput, TouchableOpacity, Text, ScrollView, Platform} from 'react-native';
 import { TrainInfo } from '@/types';
-import { useState } from 'react';
+import { useState, useLayoutEffect} from 'react';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation, useRouter } from 'expo-router';
 
 export default function MyTripsHomeScreen() {
   const[trips, setTrips] = useState<TrainInfo[]>([]);
+  const navigation = useNavigation();
+  const router = useRouter();
 
 // const fetchTrips() = async (user)
 
@@ -25,29 +28,19 @@ export default function MyTripsHomeScreen() {
       <StatusBar barStyle="light-content" backgroundColor="#120b39" />
 
       <SafeAreaView style={styles.container}>
-        <View style={styles.searchSection}>
-          <Text style={styles.title}>My Trips</Text>
+      <View style={styles.searchSection}>
+  <View style={styles.headerRow}>
+    <Text style={styles.title}>My Trips</Text>
+    <TouchableOpacity onPress={() => router.push('/trips/passport')}>
+      <Ionicons name="person-circle-outline" size={30} color="white" />
+    </TouchableOpacity>
+  </View>
 
-          <View style={styles.trainLookupContainer}>
-          <TrainLookup onAddTrip={(trip: TrainInfo) => setTrips(prev => [...prev, trip])} />
-          </View>
+  <View style={styles.trainLookupContainer}>
+    <TrainLookup onAddTrip={(trip: TrainInfo) => setTrips(prev => [...prev, trip])} />
+  </View>
+</View>
 
-          {/* <TextInput
-            style={styles.input}
-            placeholder="Search for station..."
-            placeholderTextColor="#999"
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Departure time..."
-            placeholderTextColor="#999"
-          />
-
-          <TouchableOpacity style={styles.filterButton}>
-            <Ionicons name="filter" size={18} color="#000" />
-            <Text style={styles.filterText}>Filters</Text>
-          </TouchableOpacity> */}
-        </View>
 
         <ScrollView
           style={styles.resultsContainer}
@@ -168,6 +161,13 @@ const styles = StyleSheet.create({
       color: '#0a0a23',
       marginTop: 2,
     },
+    headerRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: 14,
+    },
+    
   });
   
   
