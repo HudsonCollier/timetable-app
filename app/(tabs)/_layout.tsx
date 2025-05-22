@@ -5,7 +5,7 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: "#ffd33d",
+        tabBarActiveTintColor: "#f7c600",
         headerStyle: {
           backgroundColor: "#0f2027",
           height: 110,
@@ -25,6 +25,14 @@ export default function TabLayout() {
           elevation: 0,
         },
         headerTitleAlign: "center",
+
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: "600",
+        },
+        tabBarItemStyle: {
+          marginTop: 2,
+        },        
       }}
     >
 
@@ -50,7 +58,7 @@ export default function TabLayout() {
           headerShown: false,
           tabBarLabel: "Trips",
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons name="home" color={color} size={24} />
+            <Ionicons name="albums-outline" color={color} size={24} />
           ),
         }}
       />

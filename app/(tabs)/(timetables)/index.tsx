@@ -13,17 +13,19 @@ export default function TimetablesSearchScreen() {
   return (
     <View style={styles.container}>
       <ImageBackground
-        source={require('@/assets/images/dutchPic.jpg')}
+        source={require('@/assets/images/newBackground.jpg')}
         style={styles.headerImage}
         resizeMode="cover"
       >
-        <Text style={styles.headerText}>Find a Timetable</Text>
+        <Text style={styles.headerText}>Search Timetables</Text>
       </ImageBackground>
 
       <View style={styles.content}>
-        <TimetableSearch onSubmit={(station, code) => {
-          router.push({ pathname: "/results", params: { station: station.toString(), code: code.toString() } });
-        }} />
+        {/* <View style={styles.searchCard}> */}
+          <TimetableSearch onSubmit={(station, code) => {
+           router.push({ pathname: "/results", params: { station: station.toString(), code: code.toString() } });
+          }} />
+        {/* </View> */}
       </View>
     </View>
   );
@@ -37,20 +39,27 @@ const styles = StyleSheet.create({
   },
   headerImage: {
     width: '110%',
-    height: 250,
+    height: 295,
     justifyContent: 'flex-end',
     padding: 20,
   },
   headerText: {
-    fontSize: 25,
-    fontWeight: 'bold',
+    fontSize: 27.5,                 
+    fontWeight: '700',       
     color: 'white',
-  },
+    marginLeft: -8,
+    letterSpacing: 0.5,          
+    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
+  },  
   content: {
     flex: 1,
     paddingVertical: 0,
     paddingHorizontal: 0,
-  },
+    marginLeft: 5,
+    marginRight: 5,
+  }
 });
 
 

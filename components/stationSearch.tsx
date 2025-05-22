@@ -2,6 +2,8 @@ import { StyleSheet, View, Pressable, Text, TextInput } from "react-native";
 import { useState } from "react";
 import { searchStations } from "../services/api";
 import { TouchableOpacity } from "react-native";
+import { Ionicons } from '@expo/vector-icons';
+
 
 export default function StationSearch({
   placeholder = "Search for station...",
@@ -37,8 +39,10 @@ export default function StationSearch({
   };
   return (
     <View style={styles.container}>
+      <View style={styles.inputWithIcon}>
+        <Ionicons name="train-outline" size={20} color="#666" style={{ marginRight: 8 }} />
       <TextInput
-        style={styles.searchInput}
+        style={styles.inputNoBorder}
         value={query}
         onChangeText={handleSearch}
         placeholder={placeholder}
@@ -46,7 +50,7 @@ export default function StationSearch({
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
       />
-
+      </View>
       {focused && Array.isArray(stations) && stations.length > 0 && (
         <View style={styles.resultsContainer}>
           {stations.map((station, index) => (
@@ -75,20 +79,20 @@ const styles = StyleSheet.create({
     padding: 0,
     backgroundColor: "white",
     borderRadius: 18,
-    width: "80%",
+    width: "100%",
     alignSelf: "center",
   },
   searchInput: {
-    height: 40,
-    width: "100%",
-    borderWidth: 3,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    textAlignVertical: "center",
+    backgroundColor: "#f7f7f7",
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
     fontSize: 16,
-  },
+    color: "#000",
+    borderWidth: 1,
+    borderColor: "#e0e0e0",
+    width: "100%",
+  },  
   resultsContainer: {
     position: "absolute",
     top: 45,
@@ -108,4 +112,21 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#eee",
   },
+  inputWithIcon: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#f7f7f7",
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderWidth: 1,
+    borderColor: "#e0e0e0",
+    marginBottom: 10,
+  },
+  
+  inputNoBorder: {
+    flex: 1,
+    fontSize: 16,
+    color: "#000",
+  },  
 });

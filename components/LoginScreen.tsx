@@ -17,7 +17,7 @@ export default function LoginScreen() {
 
   const handleLogin = () => {
     if (email && password) {
-      router.replace('/(tabs)/trips');
+      router.replace('/(tabs)/(timetables)');
     }
   };
 
