@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { useRouter, Stack } from "expo-router";
 import * as SecureStore from "expo-secure-store";
+import { registerUser } from '@/services/authApi';
 
 export default function SignupScreen() {
   const [username, setUsername] = useState("");
@@ -18,21 +19,10 @@ export default function SignupScreen() {
   const router = useRouter();
 
   const handleSignup = async () => {
-    //Remove later
-    router.push("/VerifyCodeScreen");
-
-
     try {
-      const res = await fetch("http://your-api-url/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, email, password }),
-      });
-
-      if (!res.ok) throw new Error("Signup failed");
-
-      await SecureStore.setItemAsync("signupEmail", email);
-      router.push("/VerifyCodeScreen");
+      await registerUser(email, password, username);
+      await SecureStore.setItemAsync('signupEmail', email);
+      router.push("/VerifyCodeScreen")
     } catch (err) {
       console.error("Signup error:", err);
     }
@@ -60,7 +50,7 @@ export default function SignupScreen() {
           placeholderTextColor="#777"
           keyboardType="email-address"
           value={email}
-          onChangeText={setEmail}
+          onChangeText={(text) => setEmail(text.trim().toLowerCase())} 
         />
         <TextInput
           style={styles.input}

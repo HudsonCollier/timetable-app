@@ -10,17 +10,28 @@ import {
   Platform,
 } from "react-native";
 import { useRouter } from "expo-router";
+import { loginUser } from "@/services/authApi";
+import * as SecureStore from 'expo-secure-store';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const router = useRouter();
 
-  const handleLogin = () => {
-    if (email && password) {
-      router.replace("/(tabs)/(timetables)");
-    }
-  };
+ const handleLogin = async () => {
+  try {
+    const { token } = await loginUser(email.trim().toLowerCase(), password);
+    await SecureStore.setItemAsync('userToken', token);
+
+    setStatusMessage('Logged in successfully!');
+    setTimeout(() => router.replace('/(tabs)/(timetables)'), 1500);
+  } catch (err) {
+    console.error(err);
+    setStatusMessage('Login failed. Check your email or password.');
+  }
+};
+
 
   return (
     <>
@@ -49,6 +60,13 @@ export default function LoginScreen() {
         onChangeText={setPassword}
         secureTextEntry
       />
+
+      {statusMessage && (
+  <Text style={styles.statusText}>
+    {statusMessage}
+  </Text>
+)}
+
 
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Log In</Text>
@@ -90,6 +108,12 @@ const styles = StyleSheet.create({
     width: "100%",
     marginTop: 10,
   },
+  statusText: {
+  fontSize: 14,
+  color: '#333',
+  marginBottom: 12,
+  textAlign: 'center',
+},
   buttonText: { fontSize: 16, fontWeight: "600", color: "#000" },
   linkText: { marginTop: 20, fontSize: 14, color: "#007aff" },
 });

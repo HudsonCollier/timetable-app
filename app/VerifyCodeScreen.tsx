@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -10,31 +10,31 @@ import {
 } from "react-native";
 import { useRouter, Stack } from "expo-router";
 import * as SecureStore from "expo-secure-store";
+import { verifyCode } from '@/services/authApi';
 
 export default function VerifyCodeScreen() {
   const [code, setCode] = useState("");
+  const[email ,setEmail] = useState("");
   const router = useRouter();
 
-  const handleVerify = async () => {
-    //REMOVE
-    router.replace("/LoginScreen");
+  
+const handleVerify = async () => {
+  try {
+    const email = await SecureStore.getItemAsync('signupEmail');
 
-    const email = await SecureStore.getItemAsync("signupEmail");
-
-    try {
-      const res = await fetch("http://your-api-url/auth/verify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, code }),
-      });
-
-      if (!res.ok) throw new Error("Invalid code");
-
-      await SecureStore.deleteItemAsync("signupEmail");
-    } catch (err) {
-      console.error("Verification failed:", err);
+    if (!email) {
+      alert('Something went wrong — email missing.');
+      return;
     }
-  };
+
+    await verifyCode(email, code);
+    await SecureStore.deleteItemAsync('signupEmail');
+    router.replace('/LoginScreen');
+  } catch (err) {
+    console.error(err);
+    alert('Verification failed. Please try again.');
+  }
+};
 
   return (
     <>
