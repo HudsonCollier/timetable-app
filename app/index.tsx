@@ -1,12 +1,5 @@
-import { Redirect, Stack } from "expo-router";
-import LoginScreen from '@/components/LoginScreen';
+import { Redirect } from "expo-router";
 
 export default function Index() {
-  // return <Redirect href="/(tabs)/trips" />;
-  return (
-    <>
-      <Stack.Screen options={{ headerShown: false }} />
-      <LoginScreen />
-    </>
-  );
+  return <Redirect href="/LoginScreen" />;
 }

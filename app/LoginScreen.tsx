@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import { Stack } from 'expo-router';
 import {
   View,
   Text,
@@ -7,23 +8,25 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
-} from 'react-native';
-import { useRouter } from 'expo-router';
+} from "react-native";
+import { useRouter } from "expo-router";
 
 export default function LoginScreen() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const router = useRouter();
 
   const handleLogin = () => {
     if (email && password) {
-      router.replace('/(tabs)/(timetables)');
+      router.replace("/(tabs)/(timetables)");
     }
   };
 
   return (
+    <>
+    <Stack.Screen options={{ headerShown: false }} />
     <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
       style={styles.container}
     >
       <Text style={styles.title}>Log In</Text>
@@ -50,48 +53,43 @@ export default function LoginScreen() {
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Log In</Text>
       </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => router.push("/SignupScreen")}>
+        <Text style={styles.linkText}>Don't have an account? Sign up</Text>
+      </TouchableOpacity>
     </KeyboardAvoidingView>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f2f2f2', 
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#f2f2f2",
+    justifyContent: "center",
+    alignItems: "center",
     paddingHorizontal: 24,
   },
-  title: {
-    fontSize: 20,
-    fontWeight: '600',
-    marginBottom: 60,
-    color: '#333',
-  },
+  title: { fontSize: 20, fontWeight: "600", marginBottom: 60, color: "#333" },
   input: {
-    width: '100%',
-    backgroundColor: '#fff',
-    color: '#333',
+    width: "100%",
+    backgroundColor: "#fff",
     borderRadius: 10,
     padding: 14,
     fontSize: 16,
     marginBottom: 16,
-    borderColor: '#ddd',
+    borderColor: "#ddd",
     borderWidth: 1,
   },
   button: {
-    backgroundColor: '#ffd33d',
+    backgroundColor: "#ffd33d",
     borderRadius: 10,
     paddingVertical: 14,
     paddingHorizontal: 24,
-    alignItems: 'center',
-    width: '100%',
+    alignItems: "center",
+    width: "100%",
     marginTop: 10,
-    elevation: 2,
   },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#000',
-  },
+  buttonText: { fontSize: 16, fontWeight: "600", color: "#000" },
+  linkText: { marginTop: 20, fontSize: 14, color: "#007aff" },
 });
