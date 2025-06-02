@@ -1,3 +1,5 @@
+import * as SecureStore from 'expo-secure-store';
+
 const API_BASE_URL = 'http://192.168.1.85:8080';
 
 export const registerUser = async (email: string, password: string, username: string): Promise<void> => {
@@ -45,6 +47,20 @@ export async function loginUser(email: string, password: string): Promise<{ toke
   }
 
   return await response.json(); 
-}
+};
+
+export const saveToken = async (token: string) => {
+  await SecureStore.setItemAsync('userToken', token);
+};
+
+export const getToken = async () => {
+  return await SecureStore.getItemAsync('userToken');
+};
+
+export const deleteToken = async () => {
+  await SecureStore.deleteItemAsync('userToken');
+};
+
+
 
 

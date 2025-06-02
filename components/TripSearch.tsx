@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { searchStations, addTrip } from "@/services/api";
+import { searchStations, AddTrip, fetchUserTrips } from "@/services/api";
 import {
   ScrollView,
   View,
@@ -9,37 +9,55 @@ import {
   TouchableOpacity,
 } from "react-native";
 
-
 type Props = {
-  onAddTrip: (trip: TrainInfo) => void;
+  onAddTrip: () => Promise<void>;
 };
 
-type TrainInfo = {
-    trainNumber: number;
-    departureStation: string;
-    arrivalStation: string;
-    direction: string;
-    departureTime: string;
-    arrivalTime: string;
-    onTime: boolean;
-    delayed: boolean;
-    cancelled: boolean;
-    delayDuration: number;
-    departurePlatformNumber?: string;
-    arrivalPlatformNumber?: string;
-    timeUntilDeparture: string;
+type TripInfo = {
+  id: number;
+  trainNumber: number;
+  departureStation: string;
+  arrivalStation: string;
+  direction: string;
+  departureTime: string;
+  arrivalTime: string;
+  onTime: boolean;
+  cancelled: boolean;
+  delayed: boolean;
+  delayDuration: number;
+  departurePlatformNumber: string | null;
+  arrivalPlatformNumber: string | null;
+  timeUntilDeparture: string;
+  date: string;
+  tripDistance: number;
+  tripDuration: number;
+  intermediateStops: StopInfo[];
 };
 
-export default function TrainLookup({onAddTrip} : Props) {
+type StopInfo = {
+  id: number;
+  stationName: string;
+  stationCode: string;
+  arrivalTime: string | null;
+  departureTime: string | null;
+  cancelled: boolean;
+  arrivalPlatform: string | null;
+  departurePlatform: string | null;
+  delayInSeconds: number;
+  status: string | null;
+};
+
+export default function TrainLookup({ onAddTrip }: Props) {
   const [trainNumber, setTrainNumber] = useState("");
   const [departure, setDeparture] = useState("");
   const [arrival, setArrival] = useState("");
-  const [focusedField, setFocusedField] = useState<"departure" | "arrival" | null>(null);
+  const [focusedField, setFocusedField] = useState<
+    "departure" | "arrival" | null
+  >(null);
   const [departureCode, setDepartureCode] = useState("");
   const [arrivalCode, setArrivalCode] = useState("");
   const [stationMap, setStationMap] = useState<Record<string, string>>({});
   const [stationNames, setStationNames] = useState<string[]>([]);
-  const [tripData, setTripData] = useState<TrainInfo | null>(null);
 
   const handleStationSearch = async (
     text: string,
@@ -52,9 +70,11 @@ export default function TrainLookup({onAddTrip} : Props) {
       try {
         const results = await searchStations(text);
         const names = results.map((station) => station.name);
-        const map = Object.fromEntries(results.map((station) => [station.name, station.code]));
+        const map = Object.fromEntries(
+          results.map((station) => [station.name, station.code])
+        );
         setStationNames(names);
-        setStationMap(map); 
+        setStationMap(map);
         setFocusedField(field);
       } catch (error) {
         console.error("Failed to fetch stations:", error);
@@ -69,12 +89,11 @@ export default function TrainLookup({onAddTrip} : Props) {
     if (trainNumber.trim() !== "" && departure && arrival) {
       try {
         const trainNumAsNumber = Number(trainNumber);
-        const trip = await addTrip(departureCode, arrivalCode, trainNumAsNumber);
-        setTripData(trip as TrainInfo);
-        onAddTrip(trip as TrainInfo);
-        } catch (error) {
-        console.error("ERROR", error);
-      }
+        await AddTrip(departureCode, arrivalCode, trainNumAsNumber);
+        await onAddTrip();
+      } catch (error: any) {
+        console.error("AddTrip error:", error.message ?? error);
+      } 
     } else {
       console.warn("Missing some fields");
     }
@@ -159,13 +178,6 @@ export default function TrainLookup({onAddTrip} : Props) {
   );
 }
 
-
-
-
-
-
-
-
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "#121212",
@@ -178,16 +190,16 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowRadius: 8,
     elevation: 4,
-  },  
+  },
   input: {
     height: 48,
-    backgroundColor: "#1e1e1e", 
-    color: "#f0f0f0",            
+    backgroundColor: "#1e1e1e",
+    color: "#f0f0f0",
     borderRadius: 12,
     paddingHorizontal: 16,
     fontSize: 16,
     borderWidth: 1,
-    borderColor: "#333",       
+    borderColor: "#333",
     marginBottom: 12,
   },
   button: {
@@ -212,7 +224,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     width: "100%",
-    gap: 8, 
+    gap: 8,
   },
   halfInput: {
     flex: 1,
@@ -241,5 +253,5 @@ const styles = StyleSheet.create({
     borderBottomColor: "#eee",
     fontSize: 16,
     color: "#333",
-  }
+  },
 });
