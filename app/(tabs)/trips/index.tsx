@@ -18,7 +18,7 @@ import { useFocusEffect } from "expo-router";
 import { fetchUserTrips, deleteTrip } from "@/services/api";
 import React from "react";
 import { TripInfo } from "@/types";
-import Swipeable from 'react-native-gesture-handler/Swipeable';
+import Swipeable from "react-native-gesture-handler/Swipeable";
 
 export default function MyTripsHomeScreen() {
   const [trips, setTrips] = useState<TripInfo[]>([]);
@@ -39,129 +39,108 @@ export default function MyTripsHomeScreen() {
     }, [])
   );
 
+  const getCityName = (stationName: string): string => {
+    const parts = stationName.split(" ");
+    return parts[0];
+  };
+
   return (
-  <View style={styles.screen}>
-    <StatusBar barStyle="dark-content" backgroundColor="#f2f2f2" />
-    <SafeAreaView style={styles.container}>
-      <View style={styles.searchSection}>
-        <View style={styles.headerRow}>
-          <Text style={styles.title}>My Trips</Text>
-          <TouchableOpacity
-            onPress={() => router.push("/trips/passport")}
-            style={styles.profileButton}
-            activeOpacity={0.8}
-          >
-            <Ionicons name="person-circle-outline" size={40} color="#000" />
-          </TouchableOpacity>
+    <View style={styles.screen}>
+      <StatusBar barStyle="dark-content" backgroundColor="#f2f2f2" />
+      <SafeAreaView style={styles.container}>
+        <View style={styles.searchSection}>
+          <View style={styles.headerRow}>
+            <Text style={styles.title}>My Trips</Text>
+            <TouchableOpacity
+              onPress={() => router.push("/trips/passport")}
+              style={styles.profileButton}
+              activeOpacity={0.8}
+            >
+              <Ionicons name="person-circle-outline" size={40} color="#000" />
+            </TouchableOpacity>
+          </View>
+
+          <TrainLookup
+            onAddTrip={async () => {
+              const updatedTrips = await fetchUserTrips();
+              setTrips(updatedTrips);
+            }}
+          />
         </View>
+        <View style={styles.divider} />
 
-        <TrainLookup
-          onAddTrip={async () => {
-            const updatedTrips = await fetchUserTrips();
-            setTrips(updatedTrips);
-          }}
-        />
-      </View>
-      <View style={styles.divider} />
-
-      <Text style={styles.sectionTitle}>Trips</Text>
-      <ScrollView
-        style={styles.resultsContainer}
-        contentContainerStyle={{ paddingBottom: 30 }}
-      >
-        {trips.map((dep, index) => (
-          <Swipeable
-            key={index}
-            renderRightActions={() => (
+        <ScrollView
+          style={styles.resultsContainer}
+          contentContainerStyle={{ paddingBottom: 30 }}
+        >
+          {trips.map((dep, index) => (
+            <Swipeable
+              key={index}
+              renderRightActions={() => (
+                <TouchableOpacity
+                  onPress={async () => {
+                    try {
+                      await deleteTrip(dep.id);
+                      setTrips((prev) => prev.filter((t) => t.id !== dep.id));
+                    } catch (e) {
+                      console.error("Failed to delete trip", e);
+                    }
+                  }}
+                  style={{
+                    backgroundColor: "red",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    width: 80,
+                    marginVertical: 10,
+                    borderRadius: 12,
+                  }}
+                >
+                  <Text style={{ color: "white", fontWeight: "bold" }}>
+                    Delete
+                  </Text>
+                </TouchableOpacity>
+              )}
+            >
               <TouchableOpacity
-                onPress={async () => {
-                  try {
-                    await deleteTrip(dep.id);
-                    setTrips((prev) => prev.filter((t) => t.id !== dep.id));
-                  } catch (e) {
-                    console.error("Failed to delete trip", e);
-                  }
-                }}
-                style={{
-                  backgroundColor: "red",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  width: 80,
-                  marginVertical: 10,
-                  borderRadius: 12,
-                }}
+                style={styles.resultCard}
+                onPress={() =>
+                  router.push({
+                    pathname: "/trips/passport",
+                    params: { tripId: dep.id },
+                  })
+                }
               >
-                <Text style={{ color: "white", fontWeight: "bold" }}>
-                  Delete
+                <View style={styles.cardHeader}>
+                  <Text style={styles.departureTime}>
+                    {dep.departureTime} – #{dep.trainNumber}
+                  </Text>
+                  <Text style={styles.dateText}>{dep.date}</Text>
+                </View>
+
+                <Text style={styles.destination}>
+                  {getCityName(dep.departureStation)} →{" "}
+                  {getCityName(dep.arrivalStation)}
+                </Text>
+
+                <Text style={styles.detailText}>
+                  Departs from Platform {dep.departurePlatformNumber ?? "?"}
+                </Text>
+
+                <Text style={styles.detailText}>
+                  Status:{" "}
+                  {dep.cancelled
+                    ? "Cancelled"
+                    : dep.delayed
+                    ? `Delayed ${dep.delayDuration} min`
+                    : "On Time"}
                 </Text>
               </TouchableOpacity>
-            )}
-          >
-            <TouchableOpacity
-              style={styles.resultCard}
-              onPress={() => console.log("Selected", dep.trainNumber)}
-            >
-              <View style={styles.resultRow}>
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.departureTime}>
-                    {dep.departureTime} - Train #{dep.trainNumber}
-                  </Text>
-                  <Text style={styles.destination}>
-                    {dep.departureStation} → {dep.arrivalStation}
-                  </Text>
-                  <Text style={styles.detailText}>
-                    Direction: {dep.direction}
-                  </Text>
-                  <Text style={styles.detailText}>
-                    Departure: {dep.departureTime} (Pl.{" "}
-                    {dep.departurePlatformNumber ?? "?"}){"   "}
-                    Arrival: {dep.arrivalTime} (Pl.{" "}
-                    {dep.arrivalPlatformNumber ?? "?"})
-                  </Text>
-                  <Text style={styles.detailText}>
-                    Status:{" "}
-                    {dep.cancelled
-                      ? "Cancelled"
-                      : dep.delayed
-                      ? `Delayed ${dep.delayDuration} min`
-                      : "On Time"}
-                  </Text>
-                  <Text style={styles.detailText}>
-                    Leaves in: {dep.timeUntilDeparture}
-                  </Text>
-
-                  {dep.intermediateStops.length > 0 && (
-                    <View style={{ marginTop: 10 }}>
-                      <Text
-                        style={{
-                          fontWeight: "bold",
-                          color: "#f1c40f",
-                          marginBottom: 4,
-                        }}
-                      >
-                        Intermediate Stops:
-                      </Text>
-                      {dep.intermediateStops.map((stop, idx) => (
-                        <Text key={stop.id} style={styles.detailText}>
-                          {idx + 1}. {stop.stationName}{" "}
-                          {stop.arrivalTime ? `(Arr: ${stop.arrivalTime})` : ""}{" "}
-                          {stop.departureTime
-                            ? `(Dep: ${stop.departureTime})`
-                            : ""}
-                        </Text>
-                      ))}
-                    </View>
-                  )}
-                </View>
-              </View>
-            </TouchableOpacity>
-          </Swipeable>
-        ))}
-      </ScrollView>
-    </SafeAreaView>
-  </View>
-);
-
+            </Swipeable>
+          ))}
+        </ScrollView>
+      </SafeAreaView>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -197,10 +176,15 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   resultCard: {
-    backgroundColor: "#1e1e1e",
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 10,
+    backgroundColor: "#1f2a44",
+    padding: 18,
+    borderRadius: 16,
+    marginBottom: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 6,
+    elevation: 5,
   },
   resultRow: {
     flexDirection: "row",
@@ -219,9 +203,10 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   departureTime: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#ffffff",
+    marginBottom: 4,
   },
   destination: {
     fontSize: 15,
@@ -250,5 +235,16 @@ const styles = StyleSheet.create({
     marginHorizontal: 0,
     marginBottom: 12,
     opacity: 0.6,
+  },
+  cardHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 4,
+  },
+  dateText: {
+    fontSize: 14,
+    color: "#bbb",
+    fontWeight: "600",
   },
 });
