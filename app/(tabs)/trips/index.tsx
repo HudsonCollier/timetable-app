@@ -9,6 +9,7 @@ import {
   Text,
   ScrollView,
   Platform,
+  Alert
 } from "react-native";
 
 import { useState, useLayoutEffect } from "react";
@@ -32,7 +33,7 @@ export default function MyTripsHomeScreen() {
           const result = await fetchUserTrips();
           setTrips(result);
         } catch (e) {
-          console.error("Trip load error", e);
+          Alert.alert("Error", "Trip load error.");
         }
       };
       loadTrips();
@@ -83,7 +84,7 @@ export default function MyTripsHomeScreen() {
                       await deleteTrip(dep.id);
                       setTrips((prev) => prev.filter((t) => t.id !== dep.id));
                     } catch (e) {
-                      console.error("Failed to delete trip", e);
+                      Alert.alert("Error", "Failed to delete trip.");
                     }
                   }}
                   style={{
@@ -118,8 +119,8 @@ export default function MyTripsHomeScreen() {
                 </View>
 
                 <Text style={styles.destination}>
-                  {getCityName(dep.departureStation)} →{" "}
-                  {getCityName(dep.arrivalStation)}
+                  {getCityName(dep.departureStationName)} →{" "}
+                  {getCityName(dep.arrivalStationName)}
                 </Text>
 
                 <Text style={styles.detailText}>

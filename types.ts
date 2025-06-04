@@ -17,6 +17,8 @@ export type TripInfo = {
   tripDistance: number;
   tripDuration: number;
   intermediateStops: StopInfo[];
+  departureStationName: string;
+  arrivalStationName: string;
 };
 
 export type StopInfo = {

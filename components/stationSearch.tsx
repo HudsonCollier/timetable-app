@@ -18,25 +18,28 @@ export default function StationSearch({
   const[stationCode, setCode] = useState("");
   const [stationMap, setStationMap] = useState<Record<string, string>>({});
 
-  const handleSearch = async (text: string) => {
-    setQuery(text);
+ const handleSearch = async (text: string) => {
+  setQuery(text);
 
-    if (text.length >= 1) {
-      try {
-        const results = await searchStations(text);   
-        const stationNames = results.map(station => station.name);
-        const map = Object.fromEntries(results.map((station) => [station.name, station.code]));
-        setStations(stationNames);
-        setStationMap(map); 
-      } catch (error) {
-        console.error("Search failed", error);
-        setStations([]);
-      } finally {
-      }
-    } else {
-      setStations([]);
-    }
-  };
+  if (text.trim().length === 0) {
+    setStations([]);
+    setCode("");
+    onSelect("", "");  
+    return;
+  }
+
+  try {
+    const results = await searchStations(text);   
+    const stationNames = results.map(station => station.name);
+    const map = Object.fromEntries(results.map((station) => [station.name, station.code]));
+    setStations(stationNames);
+    setStationMap(map); 
+  } catch (error) {
+    console.error("Search failed", error);
+    setStations([]);
+  }
+};
+
   return (
     <View style={styles.container}>
       <View style={styles.inputWithIcon}>

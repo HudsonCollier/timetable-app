@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   ScrollView,
   StatusBar,
+  Alert
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -110,8 +111,7 @@ export default function ResultsScreen() {
                       await AddTrip(departureCode, arrivalCode, trainNum);
                       alert("Trip added!");
                     } catch (e) {
-                      console.error("Failed to add trip", e);
-                      alert("Error adding trip");
+                      Alert.alert("Error", "Failed to add trip.");
                     }
                   }}
                   style={{
