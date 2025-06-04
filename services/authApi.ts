@@ -2,13 +2,13 @@ import * as SecureStore from 'expo-secure-store';
 
 const API_BASE_URL = 'http://192.168.1.85:8080';
 
-export const registerUser = async (email: string, password: string, username: string): Promise<void> => {
+export const registerUser = async (email: string, password: string, username: string, firstName: string, lastName: string): Promise<void> => {
     const response = await fetch(`${API_BASE_URL}/auth/signup`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ username, email, password }),
+    body: JSON.stringify({ username, email, password, firstName, lastName }),
   });
 
     

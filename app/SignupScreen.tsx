@@ -16,11 +16,13 @@ export default function SignupScreen() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const[firstName, setFirstName] = useState("");
+  const[lastName, setLastName] = useState("");
   const router = useRouter();
 
   const handleSignup = async () => {
     try {
-      await registerUser(email, password, username);
+      await registerUser(email, password, username, firstName, lastName);
       await SecureStore.setItemAsync('signupEmail', email);
       router.push("/VerifyCodeScreen")
     } catch (err) {
@@ -36,6 +38,22 @@ export default function SignupScreen() {
         style={styles.container}
       >
         <Text style={styles.title}>Create Account</Text>
+
+        <TextInput
+          style={styles.input}
+          placeholder="First Name"
+          placeholderTextColor="#777"
+          value={firstName}
+          onChangeText={setFirstName}
+        />
+
+        <TextInput
+          style={styles.input}
+          placeholder="Last Name"
+          placeholderTextColor="#777"
+          value={lastName}
+          onChangeText={setLastName}
+        />
 
         <TextInput
           style={styles.input}
