@@ -9,7 +9,7 @@ import {
   Text,
   ScrollView,
   Platform,
-  Alert
+  Alert,
 } from "react-native";
 
 import { useState, useLayoutEffect } from "react";
@@ -31,7 +31,16 @@ export default function MyTripsHomeScreen() {
       const loadTrips = async () => {
         try {
           const result = await fetchUserTrips();
-          setTrips(result);
+
+          const sortedTrips = result.sort((a, b) => {
+            if (a.live && !b.live) return -1;
+            if (!a.live && b.live) return 1;
+            const dateA = new Date(a.date + " " + a.departureTime);
+            const dateB = new Date(b.date + " " + b.departureTime);
+            return dateB.getTime() - dateA.getTime();
+          });
+
+          setTrips(sortedTrips);
         } catch (e) {
           Alert.alert("Error", "Trip load error.");
         }
@@ -39,11 +48,6 @@ export default function MyTripsHomeScreen() {
       loadTrips();
     }, [])
   );
-
-  const getCityName = (stationName: string): string => {
-    const parts = stationName.split(" ");
-    return parts[0];
-  };
 
   return (
     <View style={styles.screen}>
@@ -64,7 +68,17 @@ export default function MyTripsHomeScreen() {
           <TrainLookup
             onAddTrip={async () => {
               const updatedTrips = await fetchUserTrips();
-              setTrips(updatedTrips);
+
+              const sorted = updatedTrips.sort((a, b) => {
+                if (a.live && !b.live) return -1;
+                if (!a.live && b.live) return 1;
+                return (
+                  new Date(`${b.date}T${b.departureTime}`).getTime() -
+                  new Date(`${a.date}T${a.departureTime}`).getTime()
+                );
+              });
+
+              setTrips(sorted);
             }}
           />
         </View>
@@ -112,23 +126,45 @@ export default function MyTripsHomeScreen() {
                 }
               >
                 <View style={styles.cardHeader}>
-                  <Text style={styles.departureTime}>
-                    {dep.departureTime} – #{dep.trainNumber}
-                  </Text>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 8,
+                    }}
+                  >
+                    <Text style={styles.departureTime}>
+                      {dep.departureTime} – #{dep.trainNumber}
+                    </Text>
+                    {dep.live && <Text style={styles.liveTag}>LIVE</Text>}
+                  </View>
                   <Text style={styles.dateText}>{dep.date}</Text>
                 </View>
 
                 <Text style={styles.destination}>
-                  {getCityName(dep.departureStationName)} →{" "}
-                  {getCityName(dep.arrivalStationName)}
+                  {dep.departureCity} → {dep.arrivalCity}
                 </Text>
 
-                <Text style={styles.detailText}>
-                  Departs from Platform {dep.departurePlatformNumber ?? "?"}
-                </Text>
+                {dep.live && dep.timeUntilDeparture && (
+                  <Text style={styles.detailText}>
+                    Platform {dep.departurePlatformNumber ?? "?"} —{" "}
+                    {dep.timeUntilDeparture}
+                  </Text>
+                )}
+
+                {dep.live && dep.timeUntilDeparture === "Departed" && (
+                  <Text style={styles.detailText}>
+                    Arriving in {dep.timeUntilArrival ?? "?"}
+                  </Text>
+                )}
+
+                {!dep.live && (
+                  <Text style={styles.detailText}>
+                    Platform {dep.departurePlatformNumber ?? "?"}
+                  </Text>
+                )}
 
                 <Text style={styles.detailText}>
-                  Status:{" "}
                   {dep.cancelled
                     ? "Cancelled"
                     : dep.delayed
@@ -186,6 +222,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 6,
     elevation: 5,
+    borderTopWidth: 3,
+    borderTopColor: "#f1c40f",
   },
   resultRow: {
     flexDirection: "row",
@@ -198,22 +236,11 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "25%",
   },
-  detailText: {
-    fontSize: 14,
-    color: "#bbb",
-    marginTop: 2,
-  },
+
   departureTime: {
     fontSize: 18,
     fontWeight: "bold",
     color: "#ffffff",
-    marginBottom: 4,
-  },
-  destination: {
-    fontSize: 15,
-    fontWeight: "500",
-    color: "#f1c40f",
-    marginTop: 2,
   },
   profileButton: {
     padding: 4,
@@ -241,11 +268,43 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 4,
+    marginBottom: 6,
   },
   dateText: {
     fontSize: 14,
     color: "#bbb",
     fontWeight: "600",
+  },
+
+  statusMeta: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  liveTag: {
+    backgroundColor: "#00e676",
+    color: "#121212",
+    fontWeight: "bold",
+    fontSize: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 10,
+    overflow: "hidden",
+    marginRight: 6,
+    textTransform: "uppercase",
+  },
+
+  destination: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#f1c40f",
+    marginBottom: 4,
+  },
+
+  detailText: {
+    fontSize: 14,
+    color: "#bbb",
+    marginTop: 2,
+    lineHeight: 20,
   },
 });

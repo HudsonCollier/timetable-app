@@ -19,6 +19,10 @@ export type TripInfo = {
   intermediateStops: StopInfo[];
   departureStationName: string;
   arrivalStationName: string;
+  live: boolean;
+  departureCity: string;
+  arrivalCity: string;
+  timeUntilArrival: string;
 };
 
 export type StopInfo = {

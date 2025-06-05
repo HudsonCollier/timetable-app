@@ -22,7 +22,6 @@ export default function PassportScreen() {
 
   return (
     <View style={styles.screen}>
-      {/* Static Header */}
       <View style={styles.header}>
         <View>
           <Text style={styles.name}>Hudson Collier</Text>
