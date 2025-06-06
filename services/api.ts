@@ -2,6 +2,8 @@ import { getToken } from "./authApi";
 import { passportInfo, visitedStation } from "@/types/types";
 
 const API_BASE_URL = "http://192.168.1.85:8080";
+// const API_BASE_URL = "http://timetables-backend-production.up.railway.app";
+
 
 /**
  * Used in order to autocomplete the search bar when a user is searching for a station

@@ -8,8 +8,8 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { fetchMe, fetchUsersStats } from "@/services/api"; // adjust if needed
-import { passportInfo } from "@/types/types"; // your type
+import { fetchMe, fetchUsersStats } from "@/services/api";
+import { passportInfo } from "@/types/types";
 
 
 /**
@@ -84,7 +84,7 @@ export default function PassportScreen() {
           <View style={styles.statsRow}>
             <Text style={styles.stat}>Trains: {userStats?.numOfTrains}</Text>
             <Text style={styles.stat}>
-              Distance: {userStats?.totalDistance}
+              Distance: {userStats?.totalDistance} km
             </Text>
           </View>
           <View style={styles.statsRow}>

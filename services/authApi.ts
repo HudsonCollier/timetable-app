@@ -1,6 +1,7 @@
 import * as SecureStore from "expo-secure-store";
 
 const API_BASE_URL = "http://192.168.1.85:8080";
+// const API_BASE_URL = "http://timetables-backend-production.up.railway.app";
 
 /**
  * Used in order to register a new user
