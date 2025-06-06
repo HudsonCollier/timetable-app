@@ -12,6 +12,10 @@ import { useRouter, Stack } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { registerUser } from '@/services/authApi';
 
+
+/**
+ * Signup screen allows users to signup for an account
+ */
 export default function SignupScreen() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");

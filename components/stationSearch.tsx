@@ -2,9 +2,14 @@ import { StyleSheet, View, Pressable, Text, TextInput } from "react-native";
 import { useState } from "react";
 import { searchStations } from "../services/api";
 import { TouchableOpacity } from "react-native";
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons } from "@expo/vector-icons";
 
 
+/**
+ * Station search component that is used within my Timetables screen and my Trips homescreen
+ * Allows users to search for a station in the Netherlands, i.e., user enters "Ams" -> all of the stations 
+ * where the name begins with "Ams" will be displayed / all of the station in Amsterdam
+ */
 export default function StationSearch({
   placeholder = "Search for station...",
   onSelect,
@@ -15,44 +20,51 @@ export default function StationSearch({
   const [focused, setFocused] = useState(false);
   const [query, setQuery] = useState("");
   const [stations, setStations] = useState<string[]>([]);
-  const[stationCode, setCode] = useState("");
+  const [stationCode, setCode] = useState("");
   const [stationMap, setStationMap] = useState<Record<string, string>>({});
 
- const handleSearch = async (text: string) => {
-  setQuery(text);
+  const handleSearch = async (text: string) => {
+    setQuery(text);
 
-  if (text.trim().length === 0) {
-    setStations([]);
-    setCode("");
-    onSelect("", "");  
-    return;
-  }
+    if (text.trim().length === 0) {
+      setStations([]);
+      setCode("");
+      onSelect("", "");
+      return;
+    }
 
-  try {
-    const results = await searchStations(text);   
-    const stationNames = results.map(station => station.name);
-    const map = Object.fromEntries(results.map((station) => [station.name, station.code]));
-    setStations(stationNames);
-    setStationMap(map); 
-  } catch (error) {
-    console.error("Search failed", error);
-    setStations([]);
-  }
-};
+    try {
+      const results = await searchStations(text);
+      const stationNames = results.map((station) => station.name);
+      const map = Object.fromEntries(
+        results.map((station) => [station.name, station.code])
+      );
+      setStations(stationNames);
+      setStationMap(map);
+    } catch (error) {
+      console.error("Search failed", error);
+      setStations([]);
+    }
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.inputWithIcon}>
-        <Ionicons name="train-outline" size={20} color="#666" style={{ marginRight: 8 }} />
-      <TextInput
-        style={styles.inputNoBorder}
-        value={query}
-        onChangeText={handleSearch}
-        placeholder={placeholder}
-        placeholderTextColor = "#999"
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
-      />
+        <Ionicons
+          name="train-outline"
+          size={20}
+          color="#666"
+          style={{ marginRight: 8 }}
+        />
+        <TextInput
+          style={styles.inputNoBorder}
+          value={query}
+          onChangeText={handleSearch}
+          placeholder={placeholder}
+          placeholderTextColor="#999"
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+        />
       </View>
       {focused && Array.isArray(stations) && stations.length > 0 && (
         <View style={styles.resultsContainer}>
@@ -95,7 +107,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#e0e0e0",
     width: "100%",
-  },  
+  },
   resultsContainer: {
     position: "absolute",
     top: 45,
@@ -103,7 +115,7 @@ const styles = StyleSheet.create({
     right: 0,
     backgroundColor: "#fff",
     borderRadius: 10,
-    zIndex: 999, 
+    zIndex: 999,
     elevation: 6,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
@@ -126,10 +138,10 @@ const styles = StyleSheet.create({
     borderColor: "#e0e0e0",
     marginBottom: 10,
   },
-  
+
   inputNoBorder: {
     flex: 1,
     fontSize: 16,
     color: "#000",
-  },  
+  },
 });

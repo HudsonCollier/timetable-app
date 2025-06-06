@@ -1,9 +1,14 @@
 import { getToken } from "./authApi";
-import { passportInfo, visitedStation } from "@/types";
-
-type StationResponse = string[];
+import { passportInfo, visitedStation } from "@/types/types";
 
 const API_BASE_URL = "http://192.168.1.85:8080";
+
+/**
+ * Used in order to autocomplete the search bar when a user is searching for a station
+ *
+ * @param query - The string which is what the user enters into the search bar
+ * @returns - Station names and codes for stations that start with "query..."
+ */
 export const searchStations = async (
   query: string
 ): Promise<{ name: string; code: string }[]> => {
@@ -16,10 +21,15 @@ export const searchStations = async (
   return await response.json();
 };
 
+/**
+ * Builds the header for an authenticated API request. Gets the JWT token and adds it to the header.
+ */
 const authHeader = async () => ({
   "Content-Type": "application/json",
   Authorization: `Bearer ${await getToken()}`,
 });
+
+type StationResponse = string[];
 
 export type StopInfo = {
   id: number;
@@ -69,24 +79,12 @@ export interface timetableEntry {
   intermediateStations: string[];
 }
 
-// export const addTrip = async (
-//   departure: string,
-//   arrival: string,
-//   trainNum: number
-// ): Promise<TrainInfo> => {
-//   const response = await fetch(
-//     `${API_BASE_URL}/trains?fromStation=${encodeURIComponent(
-//       departure
-//     )}&toStation=${encodeURIComponent(arrival)}&trainNumber=${encodeURIComponent(trainNum)}`,
-//     { method: 'GET', headers: { 'Content-Type': 'application/json' } }
-//   );
-
-//   if (!response.ok) throw new Error('Network error');
-//   const json = await response.json();
-//   return json as TrainInfo;
-
-// };
-
+/**
+ * Used to fetch all of the departures from a certain station for the next two hours.
+ *
+ * @param stationCode - The code for the station that we want to view departures for
+ * @returns - An array of timetable enties containing info about each departure
+ */
 export const searchDepartures = async (
   stationCode: string
 ): Promise<timetableEntry[]> => {
@@ -102,7 +100,14 @@ export const searchDepartures = async (
   return json as timetableEntry[];
 };
 
-// Add trip for the current logged in user
+/**
+ * Adds a trip to the currently logged in users account. Saves trip to the DB.
+ *
+ * @param departure - THe departure station code
+ * @param arrival - Arrival station code
+ * @param trainNum - The train number
+ * @returns - JSON of the trip
+ */
 export const AddTrip = async (
   departure: string,
   arrival: string,
@@ -126,7 +131,11 @@ export const AddTrip = async (
   return await response.json();
 };
 
-// Fetch all the trips for the logged in user
+/**
+ * Used to fetch all of the trips in the database for the currently authenticated user
+ *
+ * @returns - Array of TripInfo objects that contain data about each trip
+ */
 export const fetchUserTrips = async (): Promise<TripInfo[]> => {
   const headers = await authHeader();
   const res = await fetch(`${API_BASE_URL}/trips/all`, { headers });
@@ -134,8 +143,11 @@ export const fetchUserTrips = async (): Promise<TripInfo[]> => {
   return await res.json();
 };
 
-
-// Delete a trip
+/**
+ * Deletes a trip for the specified user
+ *
+ * @param tripId - ID of the trip user wants deleted
+ */
 export const deleteTrip = async (tripId: number) => {
   const headers = await authHeader();
   const res = await fetch(`${API_BASE_URL}/trips/${tripId}`, {
@@ -145,19 +157,29 @@ export const deleteTrip = async (tripId: number) => {
   if (!res.ok) throw new Error("Failed to delete trip");
 };
 
-// Fetch the users Train Passport
+/**
+ * Fetches the users lifetime train data
+ *
+ * @returns PassportInfo object containing the users lifetime stats
+ */
 export const fetchUsersStats = async (): Promise<passportInfo> => {
   const headers = await authHeader();
-  const res = await fetch(`${API_BASE_URL}/passport/all`, { headers });
+  const res = await fetch(`${API_BASE_URL}/passport/`, { headers });
   if (!res.ok) throw new Error("Failed to fetch passport");
   return await res.json();
 };
 
-export const fetchMe = async (): Promise<{ firstName: string; lastName: string }> => {
+/**
+ * Fetches the user data for the current logged in user. Used in order to retrieve the first and
+ * last name of the user
+ * @returns
+ */
+export const fetchMe = async (): Promise<{
+  firstName: string;
+  lastName: string;
+}> => {
   const headers = await authHeader();
   const res = await fetch(`${API_BASE_URL}/users/me`, { headers });
   if (!res.ok) throw new Error("Failed to fetch me");
   return await res.json();
 };
-
-

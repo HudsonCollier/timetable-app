@@ -9,8 +9,12 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { fetchMe, fetchUsersStats } from "@/services/api"; // adjust if needed
-import { passportInfo } from "@/types"; // your type
+import { passportInfo } from "@/types/types"; // your type
 
+
+/**
+ * Passport screen that displays the users lifetime train data by year.
+ */
 export default function PassportScreen() {
   const router = useRouter();
   const [userStats, setUserStats] = useState<passportInfo | null>(null);

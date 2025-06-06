@@ -10,31 +10,34 @@ import {
 } from "react-native";
 import { useRouter, Stack } from "expo-router";
 import * as SecureStore from "expo-secure-store";
-import { verifyCode } from '@/services/authApi';
+import { verifyCode } from "@/services/authApi";
 
+
+/**
+ * Allows user to verify the code that they received in their email
+ */
 export default function VerifyCodeScreen() {
   const [code, setCode] = useState("");
-  const[email ,setEmail] = useState("");
+  const [email, setEmail] = useState("");
   const router = useRouter();
 
-  
-const handleVerify = async () => {
-  try {
-    const email = await SecureStore.getItemAsync('signupEmail');
+  const handleVerify = async () => {
+    try {
+      const email = await SecureStore.getItemAsync("signupEmail");
 
-    if (!email) {
-      alert('Something went wrong — email missing.');
-      return;
+      if (!email) {
+        alert("Something went wrong — email missing.");
+        return;
+      }
+
+      await verifyCode(email, code);
+      await SecureStore.deleteItemAsync("signupEmail");
+      router.replace("/LoginScreen");
+    } catch (err) {
+      console.error(err);
+      alert("Verification failed. Please try again.");
     }
-
-    await verifyCode(email, code);
-    await SecureStore.deleteItemAsync('signupEmail');
-    router.replace('/LoginScreen');
-  } catch (err) {
-    console.error(err);
-    alert('Verification failed. Please try again.');
-  }
-};
+  };
 
   return (
     <>

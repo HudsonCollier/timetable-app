@@ -27,6 +27,10 @@ type timetableEntry = {
   intermediateStations: string[];
 };
 
+
+/**
+ * Screen that displays all of the departures for a given station in the Netherlands
+ */
 export default function ResultsScreen() {
   const { station, code } = useLocalSearchParams();
   const [departures, setDepartures] = useState<timetableEntry[]>([]);

@@ -1,5 +1,3 @@
-// components/TripSearch.tsx
-
 import { useState } from "react";
 import {
   Text,
@@ -13,7 +11,13 @@ import {
 import StationSearch from "./stationSearch";
 import { Ionicons } from "@expo/vector-icons";
 
-export default function TripSearch({ 
+
+/**
+ * A search form that lets the user pick a station and view its departures.
+ * Calls the onSubmit function with the station name and code when the button is pressed that is sent over
+ * to the StationSearch component
+ */
+export default function TimetableSearch({
   onSubmit,
 }: {
   onSubmit: (station: string, code: string) => void;

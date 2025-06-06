@@ -18,9 +18,14 @@ import { useNavigation, useRouter } from "expo-router";
 import { useFocusEffect } from "expo-router";
 import { fetchUserTrips, deleteTrip } from "@/services/api";
 import React from "react";
-import { TripInfo } from "@/types";
+import { TripInfo } from "@/types/types";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 
+
+/**
+ * Trips home screen that allows users to search for and add a trip, navigate to their
+ * lifetime train data screen, as well as view their current live trip and past trips.
+ */
 export default function MyTripsHomeScreen() {
   const [trips, setTrips] = useState<TripInfo[]>([]);
   const navigation = useNavigation();
