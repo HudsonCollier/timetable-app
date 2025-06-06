@@ -37,3 +37,22 @@ export type StopInfo = {
   delayInSeconds: number;
   status: string | null;
 };
+
+
+export type passportInfo = {
+  id: number;
+  numOfTrains: number;
+  numOfStations: number;
+  numOfCountries: number;
+  totalDistance: number;
+  totalDuration: number;
+  totalDelayInMinutes: number;
+  avgDelayTimeInMinutes: number;
+  visitedStations: visitedStation[];
+}
+
+export type visitedStation = {
+  id: number;
+  stationCode: string;
+  stationName: string;
+}

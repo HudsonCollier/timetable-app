@@ -1,30 +1,58 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+import { fetchMe, fetchUsersStats } from "@/services/api"; // adjust if needed
+import { passportInfo } from "@/types"; // your type
 
 export default function PassportScreen() {
   const router = useRouter();
+  const [userStats, setUserStats] = useState<passportInfo | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
 
-  const userStats = {
-    trains: 42,
-    distance: "3,200 km",
-    time: "1d 12h",
-    stations: 18,
-    companies: 4,
-    countries: 5,
-    delayMinutes: 25,
-    avgDelay: 4,
-    trips: [
-      { from: "Utrecht Centraal", to: "Amsterdam", train: "IC 142", time: "07:15" },
-      { from: "Rotterdam", to: "The Hague", train: "Sprinter 2103", time: "08:00" },
-    ]
-  };
+  useEffect(() => {
+    const loadStats = async () => {
+      try {
+        const data = await fetchUsersStats();
+        setUserStats(data);
+      } catch (e) {
+        console.error("Error fetching passport:", e);
+        setError("Could not load passport.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadStats();
+  }, []);
+
+  useEffect(() => {
+    const loadName = async () => {
+      try {
+        const data = await fetchMe();
+        setFirstName(`${data.firstName}`);
+        setLastName(`${data.lastName}`);
+      } catch (e) {
+        console.error("Failed to load user name", e);
+      }
+    };
+
+    loadName();
+  }, []);
 
   return (
     <View style={styles.screen}>
       <View style={styles.header}>
         <View>
-          <Text style={styles.name}>Hudson Collier</Text>
+          <Text style={styles.name}>{firstName + " " + lastName}</Text>
           <Text style={styles.subtitle}>My Train Log</Text>
         </View>
         <TouchableOpacity onPress={() => router.back()}>
@@ -32,7 +60,6 @@ export default function PassportScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Static Tabs */}
       <View style={styles.tabs}>
         {["ALL-TIME", "2025", "2024"].map((year, i) => (
           <TouchableOpacity key={i} style={styles.tab}>
@@ -41,46 +68,48 @@ export default function PassportScreen() {
         ))}
       </View>
 
-      {/* Scrollable Content */}
-      <ScrollView style={styles.scrollContainer} contentContainerStyle={{ paddingBottom: 30 }}>
-        {/* All-Time Stats Card */}
-        <TouchableOpacity style={styles.cardBlue} onPress={() => router.push("/trips")}>
+      <ScrollView
+        style={styles.scrollContainer}
+        contentContainerStyle={{ paddingBottom: 30 }}
+      >
+        <TouchableOpacity
+          style={styles.cardBlue}
+          onPress={() => router.push("/trips")}
+        >
           <Text style={styles.cardTitle}>ALL-TIME TRAIN PASSPORT</Text>
           <View style={styles.statsRow}>
-            <Text style={styles.stat}>Trains: {userStats.trains}</Text>
-            <Text style={styles.stat}>Distance: {userStats.distance}</Text>
+            <Text style={styles.stat}>Trains: {userStats?.numOfTrains}</Text>
+            <Text style={styles.stat}>
+              Distance: {userStats?.totalDistance}
+            </Text>
           </View>
           <View style={styles.statsRow}>
-            <Text style={styles.stat}>Time: {userStats.time}</Text>
-            <Text style={styles.stat}>Stations: {userStats.stations}</Text>
+            <Text style={styles.stat}>Time: {userStats?.totalDuration}</Text>
+            <Text style={styles.stat}>
+              Stations: {userStats?.numOfStations}
+            </Text>
           </View>
           <View style={styles.statsRow}>
-            <Text style={styles.stat}>Companies: {userStats.companies}</Text>
-            <Text style={styles.stat}>Countries: {userStats.countries}</Text>
+            <Text style={styles.stat}>
+              Countries: {userStats?.numOfCountries}
+            </Text>
           </View>
           <Text style={styles.detailLink}>All Train Stats →</Text>
         </TouchableOpacity>
 
-        {/* Delay Card */}
         <View style={styles.cardRed}>
           <Text style={styles.cardTitle}>Delays Summary</Text>
-          <Text style={styles.statLarge}>{userStats.delayMinutes} min lost from delays</Text>
-          <Text style={styles.subText}>Avg delay: {userStats.avgDelay} min</Text>
+          <Text style={styles.statLarge}>
+            {userStats?.totalDelayInMinutes} min lost from delays
+          </Text>
+          <Text style={styles.subText}>
+            Avg delay: {userStats?.avgDelayTimeInMinutes} min
+          </Text>
         </View>
-
-        {/* Trip History */}
-        <Text style={styles.sectionTitle}>Past Trips</Text>
-        {userStats.trips.map((trip, index) => (
-          <View key={index} style={styles.tripCard}>
-            <Text style={styles.tripTitle}>{trip.from} → {trip.to}</Text>
-            <Text style={styles.tripSub}>Train {trip.train} at {trip.time}</Text>
-          </View>
-        ))}
       </ScrollView>
     </View>
   );
 }
-
 
 const styles = StyleSheet.create({
   screen: {

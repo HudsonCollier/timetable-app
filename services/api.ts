@@ -1,4 +1,5 @@
 import { getToken } from "./authApi";
+import { passportInfo, visitedStation } from "@/types";
 
 type StationResponse = string[];
 
@@ -143,3 +144,20 @@ export const deleteTrip = async (tripId: number) => {
   });
   if (!res.ok) throw new Error("Failed to delete trip");
 };
+
+// Fetch the users Train Passport
+export const fetchUsersStats = async (): Promise<passportInfo> => {
+  const headers = await authHeader();
+  const res = await fetch(`${API_BASE_URL}/passport/all`, { headers });
+  if (!res.ok) throw new Error("Failed to fetch passport");
+  return await res.json();
+};
+
+export const fetchMe = async (): Promise<{ firstName: string; lastName: string }> => {
+  const headers = await authHeader();
+  const res = await fetch(`${API_BASE_URL}/users/me`, { headers });
+  if (!res.ok) throw new Error("Failed to fetch me");
+  return await res.json();
+};
+
+
